@@ -2,7 +2,7 @@
 baseURL = "https://makdoudN.github.io/"
 languageCode = 'en-us'
 title = 'My website'
-theme = 'hugo-theme-nostyleplease'
+theme = 'typo'
 
 [taxonomies]
 tag = 'tags'

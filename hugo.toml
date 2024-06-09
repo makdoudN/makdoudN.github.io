@@ -1,5 +1,5 @@
 
-baseURL = 'http://makdoudN.github.io/'
+baseURL = "https://makdoudN.github.io/"
 languageCode = 'en-us'
 title = 'My website'
 theme = 'Typo'

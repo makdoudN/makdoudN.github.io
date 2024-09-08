@@ -1,7 +1,7 @@
 
 baseURL = "https://makdoudN.github.io/"
 languageCode = 'en-us'
-title = 'My website'
+title = 'Blog'
 theme = 'typo'
 
 [taxonomies]
@@ -18,10 +18,11 @@ description = "A Tech Blog"
 theme = 'auto'
 
 # Intro on main page, content is markdown
-homeIntroTitle = 'Hi!'
+homeIntroTitle = 'Welcome ! '
 homeIntroContent = """
-I am an Italian Software Engineer with a strong foundation in computer science and a passion for solving complex problems.
-I am interested in a range of topics, including algorithms, distributed systems, databases, and information retrieval.
+I’m a French Data Scientist with a passion for tackling tasks—simple or complex—through data-driven approaches. 
+My interests span Machine Learning, Bayesian Modeling, Causal Inference, and a lot related fields. 
+Beyond the technical aspects, I enjoy exploring problem spaces through the lens of data and derive simple yet actionnable answers.
 """
 
 # Collection to display on home
@@ -39,15 +40,12 @@ breadcrumbs = true
 # Social icons
 [[params.social]]
 name = "linkedin"
-url = "https://www.linkedin.com/in/user/"
+url = "https://www.linkedin.com/in/makdoud-nizam/"
 
-[[params.social]]
-name = "medium"
-url = "https://medium.com/@user"
 
 [[params.social]]
 name = "github"
-url = "https://github.com/user"
+url = "https://github.com/makdoudN"
 
 # Main menu pages
 [[params.menu]]

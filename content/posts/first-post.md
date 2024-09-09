@@ -1,9 +1,16 @@
-+++
-title = 'First Post'
-date = 2024-06-09T17:46:05+02:00
-draft = false
-+++
-
+---
+title: "Test"
+date: "2023-11-12"
+summary: "This is a test summary"
+description: "This is a test description"
+toc: true
+readTime: true
+autonumber: true
+math: true
+tags: ["test"]
+showTags: false
+hideBackToTop: false
+---
 This is a test. I will need (1) some inline latex $a = b$ and (2) some block latex:
 
 $$ A = B $$

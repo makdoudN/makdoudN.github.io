@@ -4,7 +4,7 @@ date: "2023-11-12"
 summary: "This is a test summary"
 description: "This is a test description"
 toc: true
-readTime: true
+readTime: false
 autonumber: true
 math: true
 tags: ["test"]

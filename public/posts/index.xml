@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on My website</title>
+    <title>Posts on Blog</title>
     <link>http://localhost:1313/posts/</link>
-    <description>Recent content in Posts on My website</description>
+    <description>Recent content in Posts on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 09 Jun 2024 17:46:05 +0200</lastBuildDate>
+    <lastBuildDate>Sun, 12 Nov 2023 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>First Post</title>
+      <title>Test</title>
       <link>http://localhost:1313/posts/first-post/</link>
-      <pubDate>Sun, 09 Jun 2024 17:46:05 +0200</pubDate>
+      <pubDate>Sun, 12 Nov 2023 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/first-post/</guid>
-      <description>This is a test</description>
+      <description>This is a test summary</description>
     </item>
   </channel>
 </rss>

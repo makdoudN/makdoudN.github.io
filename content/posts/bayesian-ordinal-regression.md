@@ -1,13 +1,13 @@
 ---
-title: "Test"
-date: "2023-11-12"
+title: "Bayesian Ordinal Regression - WIP"
+date: "2024-10-01"
 summary: "This is a test summary"
 description: "This is a test description"
 toc: true
-readTime: false
+readTime: true
 autonumber: true
 math: true
-tags: ["test"]
+tags: ["Machine Learning", "Bayesian Inference"]
 showTags: false
 hideBackToTop: false
 ---

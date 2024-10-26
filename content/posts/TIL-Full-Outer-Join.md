@@ -62,7 +62,11 @@ ON
     A.user_id = B.user_id;
 ```
 
-TODO Resulting table
+| A_user_id |  A_name  |  age  | B_user_id |  B_name  |  city  |
+|:---------:|:--------:|:-----:|:---------:|:--------:|:------:|
+|     1     |  Alice   |   30  |    NULL   |   NULL   |  NULL  |
+|     2     |   Bob    |   25  |     2     |   Bob    |  Paris |
+|   NULL    |   NULL   |  NULL |     3     | Charlie  | London |
 
 **Try 2, Full Outer Join with Coalesce**
 
@@ -80,4 +84,11 @@ ON
     A.user_id = B.user_id;
 ```
 
-TODO, resulting table
+| user_id |  name   |  age  |  city  |
+|:-------:|:-------:|:-----:|:------:|
+|    1    |  Alice  |   30  |  NULL  |
+|    2    |   Bob   |   25  | Paris  |
+|    3    | Charlie |  NULL | London |
+
+
+Using FULL OUTER JOIN with COALESCE is an efficient solution when merging tables with partial overlap in keys. This ensures a complete, non-lossy merge, accommodating records from both tables while handling null values gracefully. This approach aligns well with dbt's philosophy of modular data management, where tables often carry distinct but complementary feature sets for the same entities.

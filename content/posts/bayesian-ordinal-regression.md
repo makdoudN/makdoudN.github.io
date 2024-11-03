@@ -1,8 +1,8 @@
 ---
 title: "Bayesian Ordinal Regression - WIP"
 date: "2024-10-01"
-summary: "This is a test summary"
-description: "This is a test description"
+summary: "A gentle introduction to Bayesian Ordinal Regression"
+description: "A gentle introduction to Bayesian Ordinal Regression"
 toc: false
 readTime: true
 autonumber: true

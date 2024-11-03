@@ -1,5 +1,5 @@
 ---
-title: "TIL — Full Outer Join use case in ML - WIP"
+title: "TIL — Full Outer Join use case in ML"
 date: "2024-10-25"
 summary: "TODO"
 description: "TODO"

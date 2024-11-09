@@ -50,7 +50,8 @@ with $\Phi$ is the cumulative density of a zero-mean unit-variance Gaussian.
 In this case $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 2}}}$ is more than a hypothesis but it describes functionally the relationship between the **skill gap** and the probability of winning.
 As such, it builds upon our previous hypothesis $ \textcolor{blue}{\raisebox{.5pt}{\textcircled{\scriptsize 2}}} $.
 
-*Plot Image TODO*
+![Alt text describing the image](elo1.png)
+
 
 **Model Update**. Given a model of the probability of winning based on the difference of skills, how to update the skill of both players after observing of win (lose or draw) ?
 

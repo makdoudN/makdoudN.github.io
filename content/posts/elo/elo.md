@@ -1,5 +1,5 @@
 ---
-title: "Bayesian ELO Rating Model, a try — WIP"
+title: "A Bayesian Rating Model — WIP"
 date: "2024-11-06"
 summary: "WIP"
 description: "WIP"
@@ -37,23 +37,20 @@ As we will see, each approach will require a bit more hypothesis about the influ
 
 To ease the derivation, let's note the skill gap $\Delta_{AB} = s_A - s_B$
 
-## ELO Rating Model
+## A Bayesian Rating Model
 ---
 
 The ELO rating model is a statistical approach famous to be adopted by World Chess Federation (FIDE).
 ELO adds another hypothesis upon  $ \textcolor{blue}{\raisebox{.5pt}{\textcircled{\scriptsize 1}}} $ and $ \textcolor{blue}{\raisebox{.5pt}{\textcircled{\scriptsize 2}}} $: 
 
-- $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 2}}}$ Probability of A wins over B is given by 
+- $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 3}}}$ Probability of A wins over B is given by 
 $$ f(\Delta_{AB}) = \Phi\left(\frac{\Delta_{AB}}{\sqrt{2} \beta}\right) $$
 with $\Phi$ is the cumulative density of a zero-mean unit-variance Gaussian. 
 
-In this case $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 2}}}$ is more than a hypothesis but it describes functionally the relationship between the **skill gap** and the probability of winning.
-As such, it builds upon our previous hypothesis $ \textcolor{blue}{\raisebox{.5pt}{\textcircled{\scriptsize 2}}} $.
+In this case $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 3}}}$ is more than a hypothesis but it describes functionally the relationship between the **skill gap** and the probability of winning.
 
-![Alt text describing the image](elo1.png)
-
-
-**Model Update**. Given a model of the probability of winning based on the difference of skills, how to update the skill of both players after observing of win (lose or draw) ?
+Here is a plot of the probability of winning as a function of the skill gap.
+![ELO Rating Graph](/elo1.png)
 
 To understand how to update this model, it is useful to make a detour by the specification of  full (bayesian) data generative process.
 This specification is the hypothesis space upon which we believe the observations are generated. 
@@ -72,67 +69,145 @@ $$
 P\left(\mathbf{x}_A \triangleright \mathbf{x}_B | \Delta_{AB}\right) = \Phi\left(\frac{\Delta_{AB}}{\sqrt{2} \beta}\right)
 $$
 
-Using the Bayes Formula, we have the strengh of player $A$ conditioned to a wins:
-$$
-P\left(s_A \mid \text { A wins }\right) \propto P\left(\mathrm{~A} \text { wins } \mid s_A, s_B\right) \cdot P\left(s_A\right) 
-$$
 
-The main issue is that the probability of winning is a non-linear function of the skill gap.
-And unfortunately, the cumulative density function of a Gaussian is not linear neither and nasty to write:
-$$
-\Phi\left(\frac{x-\mu}{\sigma}\right)=\frac{1}{2}\left[1+\operatorname{erf}\left(\frac{x-\mu}{\sigma \sqrt{2}}\right)\right]
-$$
-But this may not be the end of the world.
-If a function is non-linear, we can always approximate it by a linear one by using a first order taylor expansion.
+--- 
 
-... TODO Derive deeply
+## Derivation of $\mathbb{E}\left[s_A \mid A \text { beats } B\right]$
+
+From Bayes Theorem, we have:
 
 $$
-\Phi\left(\frac{\Delta_{AB}}{\sqrt{2} \beta}\right) \approx \Phi\left(\frac{\mu_A-\mu_B}{\sqrt{2} \beta}\right)+\frac{1}{\sqrt{2 \pi} \beta} e^{-\frac{\left(\mu_A-\mu_B\right)^2}{4 \beta^2}} \cdot\left(s_A-\mu_A-\left(s_B-\mu_B\right)\right) .
-$$
-Pluggins this nasty beats into the bayesian formula, we get:
-$$
-\small{P\left(s_A \mid \text { A wins }\right) \propto\left[\Phi\left(\frac{\mu_A-\mu_B}{\sqrt{2} \beta}\right)+\frac{1}{\sqrt{2 \pi} \beta} e^{-\frac{\left(\mu_A-\mu_B\right)^2}{4 \beta^2}} \cdot\left(s_A-\mu_A-\left(s_B-\mu_B\right)\right)\right] \cdot P\left(s_A\right) .}
-$$
-which can be simplified to
-$$
-\propto\left[\text { constant }+\frac{1}{\sqrt{2 \pi} \beta} e^{-\frac{\left(\mu_A-\mu_B\right)^2}{4 \beta^2}} \cdot\left(s_A-\mu_A\right)\right] \cdot \exp \left(-\frac{\left(s_A-\mu_A\right)^2}{2 \sigma_A^2}\right) 
+P\left(s_A \mid A \text { beats } B\right) \propto P\left(A \text { beats } B \mid s_A\right) \cdot P\left(s_A\right)
 $$
 
-Ok so this is a big mess. 
-But we can simplify even more using : 
+We do not have directly access to $P\left(A \text { beats } B \mid s_A\right)$ but we can use the sum rule of probability to rewrite it as:
 
 $$
-P\left(s_A \mid \mathrm{A} \text { wins }\right) \propto\left[C+\alpha \cdot\left(s_A-\mu_A\right)\right] \cdot \exp \left(-\frac{\left(s_A-\mu_A\right)^2}{2 \sigma_A^2}\right),
+P\left(A \text { beats } B \mid s_A\right)=\int P\left(A \text { beats } B \mid s_A, s_B\right) \cdot P\left(s_B\right) d s_B
 $$
-
-where:
-- $C=\Phi\left(\frac{\mu_A-\mu_B}{\sqrt{2} \beta}\right)$ is the constant term,
-- $\alpha=\frac{1}{\sqrt{2 \pi} \beta} e^{-\frac{\left(\mu_A-\mu_B\right)^2}{4 \beta^2}}$ is the scaling factor for the linear term.
-
-Perfect, now let's try to derive the expectation of the "linearized" skill of player $A$ given that he won.
-
-1. **Rewrite the Posterior**: Expanding the term $\left[C+\alpha \cdot\left(s_A-\mu_A\right)\right]$ inside the posterior, we have:
+Substituting the given probability function:
 
 $$
-P\left(s_A \mid \mathrm{A} \text { wins }\right) \propto C \cdot \exp \left(-\frac{\left(s_A-\mu_A\right)^2}{2 \sigma_A^2}\right)+\alpha \cdot\left(s_A-\mu_A\right) \exp \left(-\frac{\left(s_A-\mu_A\right)^2}{2 \sigma_A^2}\right) .
+P\left(A \text { beats } B \mid s_A\right)=\int \Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right) \cdot \mathcal{N}\left(s_B \mid \mu_B, \sigma_B^2\right) d s_B
+$$
+
+Thus, the posterior distribution of $s_A$ is proportional to:
+
+$$
+P\left(s_A \mid A \text { beats } B\right) \propto \mathcal{N}\left(s_A \mid \mu_A, \sigma_A^2\right) \cdot \mathbb{E}_{s_B}\left[\Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right)\right]
+$$
+
+Then: 
+
+$$\small{\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\int s_A \cdot P\left(s_A \mid A \text { beats } B\right) d s_A \propto
+\mathbb{E}_{s_A}\left[s_A \cdot P\left(A \text { beats } B \mid s_A\right)\right]
+}$$
+
+**Stein's Lemma.** To continue the derivation we will need Stein's Lemma whichis a powerful tool in probability theory, particularly useful when dealing with expectations involving Gaussian random variables. It states that for a normally distributed random variable $X \sim \mathcal{N}\left(\mu, \sigma^2\right)$ and a differentiable function $f$ :
+
+$$
+\mathbb{E}[X f(X)]=\mu \mathbb{E}[f(X)]+\sigma^2 \mathbb{E}\left[f^{\prime}(X)\right]
+$$
+
+where $f^{\prime}(X)$ is the derivative of $f$ with respect to $X$.
+
+Perfect so, we will set $f$ to: 
+
+$$
+f\left(s_A\right)=P\left(A \text { beats } B \mid s_A\right)=\mathbb{E}_{s_B}\left[\Phi\left(\frac{\Delta_{A B}}{\sqrt{2} \beta}\right)\right]=\Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)
+$$
+
+$$
+f\left(s_A\right)=\mathbb{E}_{s_B}\left[\Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right)\right]=\int_{-\infty}^{\infty} \Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right) P\left(s_B\right) d s_B
+$$
+
+why ? Recall:
+$$
+\Delta_{A B}=s_A-s_B \sim \mathcal{N}\left(\mu_A-\mu_B, \sigma_A^2+\sigma_B^2\right) .
+$$
+Then:
+
+$$
+Z = \frac{\Delta_{A B}}{\sqrt{2} \beta}=\frac{s_A-s_B}{\sqrt{2} \beta} \sim \mathcal{N}\left(\frac{\mu_A-\mu_B}{\sqrt{2} \beta}, \frac{\sigma_A^2+\sigma_B^2}{2 \beta^2}\right)
+$$
+This simplify the computation of the expectation as:
+$$
+f\left(s_A\right)=\mathbb{E}_Z[\Phi(Z)]
+$$
+Since $Z$ is normally distributed, this expectation can be further simplified.
+
+To evaluate $\mathbb{E}[\Phi(Z)]$, where $Z \sim \mathcal{N}\left(\mu_Z, \sigma_Z^2\right)$
+
+> We will use this property of gaussian : $$\mathbb{E}[\Phi(a X+b)]=\Phi\left(\frac{a \mu_X+b}{\sqrt{1+a^2 \sigma_X^2}}\right)$$
+
+Which in our case give:
+
+$$
+\mathbb{E}[\Phi(Z)]=\Phi\left(\frac{\mu_Z}{\sqrt{1+\sigma_Z^2}}\right) = \Phi\left(\frac{\frac{s_A-\mu_B}{\sqrt{2} \beta}}{\sqrt{1+\frac{\sigma_B^2}{2 \beta^2}}}\right) = \cdots =\Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)
+$$
+
+Let's summarise a bit: 
+
+$$
+\boxed{f\left(s_A\right)=P\left(A \text { beats } B \mid s_A\right) = \Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)}
+$$
+
+Ok perfect, now we can go back to our original problem.
+
+$$
+P\left(s_A \mid A \text { beats } B\right)=\frac{P\left(A \text { beats } B \mid s_A\right) \cdot P\left(s_A\right)}{P(A \text { beats } B)}
+$$
+
+and thus:
+$$
+\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\frac{\int s_A \cdot P\left(A \text { beats } B \mid s_A\right) \cdot P\left(s_A\right) d s_A}{P(A \text { beats } B)}
+$$
+
+TODO.. expand a bit
+
+$$
+\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\frac{\mathbb{E}_{s_A}\left[s_A \cdot f\left(s_A\right)\right]}{\mathbb{E}_{s_A}\left[f\left(s_A\right)\right]}
+$$
+
+To compute $\mathbb{E}\left[s_A \cdot f\left(s_A\right)\right]$, we utilize Stein's Lemma.
+
+$$
+\mathbb{E}\left[s_A \cdot f\left(s_A\right)\right]=\mu_A \cdot \mathbb{E}\left[f\left(s_A\right)\right]+\sigma_A^2 \cdot \mathbb{E}\left[f^{\prime}\left(s_A\right)\right]
+$$
+
+We have:
+
+$$
+f^{\prime}\left(s_A\right)=\frac{d}{d s_A} \Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)=\frac{1}{\sqrt{\sigma_B^2+2 \beta^2}} \cdot \phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)
+$$
+
+Then:
+
+$$
+\mathbb{E}\left[s_A \cdot f\left(s_A\right)\right]=\mu_A \cdot \mathbb{E}\left[f\left(s_A\right)\right]+\frac{\sigma_A^2}{\sqrt{\sigma_B^2+2 \beta^2}} \cdot \mathbb{E}\left[\phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)\right]
 $$
 
 
-The posterior now consists of two terms:
-- A Gaussian term centered at $\mu_A$,
-- A term that linearly shifts $s_A$ weighted by $\left(s_A-\mu_A\right)$, also centered around $\mu_A$.
+---
 
-2. **Expectation Calculation**: Since the first term $C \cdot \exp \left(-\frac{\left(s_A-\mu_A\right)^2}{2 \sigma_A^2}\right)$ is symmetric around $\mu_A$, its contribution to the mean is $\mu_A$. The second term $\alpha \cdot\left(s_A-\mu_A\right) \cdot \exp \left(-\frac{\left(s_A-\mu_A\right)^2}{2 \sigma_A^2}\right)$ represents a shift from $\mu_A$.
-
-The mean of this posterior distribution will be approximately:
+Final Result
 
 $$
-\mathbb{E}\left[s_A \mid \mathrm{A} \text { wins }\right] \approx \mu_A+\frac{\alpha \cdot \sigma_A^2}{\sqrt{2 \pi} \sigma_A} e^{-\frac{\left(\mu_A-\mu_B\right)^2}{4 \beta^2}},
+\boxed{\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\mu_A+\frac{\sigma_A^2}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}} \cdot \frac{\phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}{\Phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}}
 $$
 
-where $\alpha \cdot \sigma_A^2$ captures the contribution from the linear term in shifting $\mu_A$ based on the observed outcome.
+{{< details  title="Learn More" >}} 
+fdsfdsafadas
+$$
+\boxed{\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\mu_A+\frac{\sigma_A^2}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}} \cdot \frac{\phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}{\Phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}}
+$$
+{{< /details >}}
 
-**Lemma**. For a random variable $X \sim \mathcal{N}\left(\mu, \sigma^2\right)$, the expectation of $(X-\mu) \cdot f(X)$, where $f(X)$ is symmetric about $\mu$, is approximately $\sigma^2 f^{\prime}(\mu)$.
 
-# TODO
+
+See [Appendix A](#appendix-a) for more details on Section A.
+See [Appendix B](#appendix-b) for more details on Section B.
+
+{{< appendix title="Appendix" sections="Section A, Section B" />}}
+
+

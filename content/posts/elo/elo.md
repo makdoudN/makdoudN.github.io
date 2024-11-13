@@ -95,22 +95,27 @@ $$
 
 *Full Joint Density over observed and latent variables*
 
+
+
+{{< details  title="Full Derivation of the Full Joint Density" >}} 
+
 $$
 P\left(X_{A \triangleright B}, s_A, s_B\right)=P\left(X_{A \triangleright B} \mid \Delta_{A B}\right) P\left(s_A\right) P\left(s_B\right)
 $$
+
+{{< /details >}}
 
 $$
 P\left(X_{A \triangleright B}, s_A, s_B\right)=\Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right) \cdot \mathcal{N}\left(s_A \mid \mu_A, \sigma_A^2\right) \cdot \mathcal{N}\left(s_B \mid \mu_B, \sigma_B^2\right)
 $$
 
-### Derivation of $P\left(s_A \mid X_{A \triangleright B}=1\right)$
+TODO - Explain what is needed now to update the distribution of the skill of player $A$ and $B$ based on the observation of a win or loss.
+
+
 ---
+### Derivation of $P\left(s_A \mid X_{A \triangleright B}=1\right)$
 
-Based on the full joint density, the posterior distribution of the skill of player $A$ given that $A$ wins over $B$ can be derived using the Bayes rule:
-
-$$
-P\left(s_A, s_B \mid X_{A \triangleright B}=1\right) \propto \Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right) \cdot \mathcal{N}\left(s_A \mid \mu_A, \sigma_A^2\right) \cdot \mathcal{N}\left(s_B \mid \mu_B, \sigma_B^2\right)
-$$
+TODO — *Explain why we are interested in $P\left(s_A \mid X_{A \triangleright B}=1\right)$*
 
 Our goal is to find $P\left(s_A \mid X_{A \triangleright B}=1\right)$, which requires integrating out $s_B$ :
 
@@ -119,16 +124,111 @@ P\left(s_A \mid X_{A \triangleright B}=1\right)=\int_{-\infty}^{\infty} P\left(s
 $$
 
 This is a nasty integral, but we can solve it analytically.
+Let's be clear, the derivation is not trivial and requires a bit of knowledge of the Gaussian and a dose of coffee and patience.
+
+{{< details  title="Full Derivation of the Posterior Distribution of the Skill of Player A" >}} 
+
+Substituting the expressions into the integral
+
+$$
+P\left(s_A \mid X_{A \triangleright B}=1\right) \propto \mathcal{N}\left(s_A \mid \mu_A, \sigma_A^2\right) \cdot \int_{-\infty}^{\infty} \Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right) \cdot \mathcal{N}\left(s_B \mid \mu_B, \sigma_B^2\right) d s_B
+$$
+
+Let's simplify the integral. Let's denote:
+- $\Delta=s_A-s_B$
+- $\gamma=\sqrt{2} \beta$
+
+Then the integral becomes:
+
+$$
+I\left(s_A\right)=\int_{-\infty}^{\infty} \Phi\left(\frac{\Delta}{\gamma}\right) \cdot \mathcal{N}\left(s_B \mid \mu_B, \sigma_B^2\right) d s_B
+$$
+
+Changing Variables. We can change the variable of integration from $s_B$ to $\Delta$ :
+
+$$
+d s_B=-d \Delta
+$$
+
+
+When $s_B \rightarrow-\infty, \Delta \rightarrow \infty$, and when $s_B \rightarrow \infty, \Delta \rightarrow-\infty$. Adjusting the limits accordingly:
+
+$$
+I\left(s_A\right)=\int_{-\infty}^{\infty} \Phi\left(\frac{\Delta}{\gamma}\right) \cdot \mathcal{N}\left(s_A-\Delta \mid \mu_B, \sigma_B^2\right)(-d \Delta)
+$$
+
+
+Rewriting:
+
+$$
+I\left(s_A\right)=\int_{-\infty}^{\infty} \Phi\left(\frac{\Delta}{\gamma}\right) \cdot \mathcal{N}\left(s_A-\Delta \mid \mu_B, \sigma_B^2\right) d \Delta
+$$
+
+Recognizing the Integral as a Convolution.
+
+The integral $I\left(s_A\right)$ represents the convolution of $\Phi\left(\frac{\Delta}{\gamma}\right)$ with the normal distribution of $\Delta$. However, there exists an integral identity that can simplify this:
+
+Integral Identity:
+
+For constants $a$ and $b$ :
+
+$$
+\int_{-\infty}^{\infty} \Phi(a x+b) \cdot \phi(x) d x=\Phi\left(\frac{b}{\sqrt{1+a^2}}\right)
+$$
+
+where $\phi(x)$ is the standard normal density function.
+
+In our case:
+- Let $x=t$
+- $\phi(t)=\frac{1}{\sqrt{2 \pi}} \exp \left(-\frac{t^2}{2}\right)$
+- Set $a=-\frac{\gamma}{\sigma_B}=-\frac{\sqrt{2} \beta}{\sigma_B}$
+- Set $b=\frac{s_A-\mu_B}{\sigma_B}$
+
+Then the integral becomes:
+
+$$
+I\left(s_A\right)=\int_{-\infty}^{\infty} \Phi(a t+b) \cdot \phi(t) d t=\Phi\left(\frac{b}{\sqrt{1+a^2}}\right)
+$$
+
+
+Compute $1+a^2$ :
+
+$$
+1+a^2=1+\left(-\frac{\gamma}{\sigma_B}\right)^2=1+\frac{2 \beta^2}{\sigma_B^2}=\frac{\sigma_B^2+2 \beta^2}{\sigma_B^2}
+$$
+
+Compute the denominator:
+
+$$
+\sqrt{1+a^2}=\frac{\sqrt{\sigma_B^2+2 \beta^2}}{\sigma_B}
+$$
+
+
+Compute $\frac{b}{\sqrt{1+a^2}}$ :
+
+$$
+\frac{b}{\sqrt{1+a^2}}=\frac{\frac{s_A-\mu_B}{\sigma_B}}{\frac{\sqrt{\sigma_B^2+2 \beta^2}}{\sigma_B}}=\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}
+$$
+
+
+Therefore, the integral simplifies to:
+
+$$
+I\left(s_A\right)=\Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)
+$$
+
+{{< /details >}}
+
+$$
+\boxed{P\left(s_A \mid X_{A \triangleright B}=1\right) \propto \mathcal{N}\left(s_A \mid \mu_A, \sigma_A^2\right) \cdot \Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)}
+$$
+
+
 
 
 ---
 
-{{< details  title="Tiny Test" >}} 
-This is a test
-$$
-\boxed{\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\mu_A+\frac{\sigma_A^2}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}} \cdot \frac{\phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}{\Phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}}
-$$
-{{< /details >}}
+
 
 
 

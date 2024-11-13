@@ -1,86 +1,83 @@
-<!-- layouts/shortcodes/toggle.html -->
 <details class="toggle-section">
-    <summary class="toggle-header">
-      <span class="toggle-title">{{ .Get "title" | markdownify }}</span>
-      <span class="toggle-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down">
-          <path d="M6 9l6 6 6-6" />
-        </svg>
-      </span>
-    </summary>
-    <div class="toggle-content">
-      {{ .Inner | markdownify }}
-    </div>
-  </details>
-  
-  <!-- Custom CSS for Toggle Block -->
-  <style>
-    .toggle-section {
-      border: 1px solid #e5e7eb;
-      background-color: #f9fafb;
-      margin-bottom: 1.5rem;
-    }
-  
+  <summary class="toggle-header">
+    <span class="toggle-title">{{ .Get "title" | markdownify }}</span>
+    <span class="toggle-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down">
+        <path d="M6 9l6 6 6-6" />
+      </svg>
+    </span>
+  </summary>
+  <div class="toggle-content">
+    {{ .Inner | markdownify }}
+  </div>
+</details>
+
+<!-- Custom CSS for Toggle Block -->
+<style>
+  .toggle-section {
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    margin-bottom: 1.5rem;
+  }
+
+  .toggle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: #374151;
+    transition: background-color 0.3s;
+  }
+
+  .toggle-header:hover {
+    background-color: #f3f4f6;
+  }
+
+  .toggle-title {
+    font-size: 1rem;
+  }
+
+  .toggle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    transition: transform 0.3s;
+  }
+
+  .toggle-section[open] .toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .toggle-content {
+    padding: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4b5563;
+    overflow: hidden;
+    transition: padding 0.3s;
+  }
+
+  .toggle-section[open] .toggle-content {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+
+  @media (max-width: 1000px) {
     .toggle-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.25rem;
-      cursor: pointer;
-      font-weight: 600;
-      color: #374151;
-      transition: background-color 0.3s;
+      padding: 0.875rem 1rem;
     }
-  
-    .toggle-header:hover {
-      background-color: #f3f4f6;
-    }
-  
+
     .toggle-title {
-      font-size: 1rem;
-    }
-  
-    .toggle-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 1.5rem;
-      height: 1.5rem;
-      transition: transform 0.3s;
-    }
-  
-    .toggle-section[open] .toggle-icon {
-      transform: rotate(180deg);
-    }
-  
-    .toggle-content {
-      padding: 1.25rem;
       font-size: 0.95rem;
-      line-height: 1.6;
-      color: #4b5563;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s, padding 0.3s;
     }
-  
-    .toggle-section[open] .toggle-content {
-      max-height: 1000px;
-      padding-top: 1.25rem;
-      padding-bottom: 1.25rem;
+
+    .toggle-content {
+      padding: 1rem;
+      font-size: 0.9rem;
     }
-  
-    @media (max-width: 768px) {
-      .toggle-header {
-        padding: 0.875rem 1rem;
-      }
-  
-      .toggle-title {
-        font-size: 0.95rem;
-      }
-  
-      .toggle-content {
-        padding: 1rem;
-        font-size: 0.9rem;
-      }
-    }
-  </style>
+  }
+</style>

@@ -7,7 +7,7 @@ toc: false
 readTime: false
 autonumber: false
 math: true
-tags: ["Machine Learning", "Bayesian Inference"]
+tags: ["Machine Learning", "Bayesian Inference", "Skill Rating Models"]
 showTags: false
 hideBackToTop: false
 ---
@@ -52,6 +52,11 @@ In this case $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 3}}}$ is
 Here is a plot of the probability of winning as a function of the skill gap.
 ![ELO Rating Graph](/elo1.png)
 
+As you can see, the probability of winning is symmetric around zero (skill gap = 0) and the probability of winning increase when the skill gap increase. 
+This is aligned with our previous hypothesis. 
+The more the skill gap increase, the more the probability of winning increase. 
+This relationship is decribed by the $\beta$ parameter.
+
 To understand how to update this model, it is useful to make a detour by the specification of  full (bayesian) data generative process.
 This specification is the hypothesis space upon which we believe the observations are generated. 
 In our case, the foundation are our hypothesis about the process and be revised to derive different method. 
@@ -69,135 +74,57 @@ $$
 P\left(\mathbf{x}_A \triangleright \mathbf{x}_B | \Delta_{AB}\right) = \Phi\left(\frac{\Delta_{AB}}{\sqrt{2} \beta}\right)
 $$
 
-
---- 
-
-## Derivation of $\mathbb{E}\left[s_A \mid A \text { beats } B\right]$
-
-From Bayes Theorem, we have:
-
+A simple graphical model can be derived from this data generative process: (TODO Explain)
 $$
-P\left(s_A \mid A \text { beats } B\right) \propto P\left(A \text { beats } B \mid s_A\right) \cdot P\left(s_A\right)
+s_A \rightarrow \Delta_{A B} \leftarrow s_B \quad \text { and } \quad \Delta_{A B} \rightarrow X_{A \triangleright B}
 $$
 
-We do not have directly access to $P\left(A \text { beats } B \mid s_A\right)$ but we can use the sum rule of probability to rewrite it as:
+**Full Data Generation Process**. Based on the model's Bayesian specification and the dependencies in the graphical model, the joint density for the observed and latent variables can be derived as follows:
+
+*Prior Densities for Skills*
 
 $$
-P\left(A \text { beats } B \mid s_A\right)=\int P\left(A \text { beats } B \mid s_A, s_B\right) \cdot P\left(s_B\right) d s_B
-$$
-Substituting the given probability function:
-
-$$
-P\left(A \text { beats } B \mid s_A\right)=\int \Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right) \cdot \mathcal{N}\left(s_B \mid \mu_B, \sigma_B^2\right) d s_B
+P\left(s_A\right)=\mathcal{N}\left(s_A \mid \mu_A, \sigma_A^2\right), \quad P\left(s_B\right)=\mathcal{N}\left(s_B \mid \mu_B, \sigma_B^2\right)
 $$
 
-Thus, the posterior distribution of $s_A$ is proportional to:
+*Outcome Probability Conditional on Skill Gap* 
 
 $$
-P\left(s_A \mid A \text { beats } B\right) \propto \mathcal{N}\left(s_A \mid \mu_A, \sigma_A^2\right) \cdot \mathbb{E}_{s_B}\left[\Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right)\right]
+P\left(X_{A \triangleright B}=1 \mid \Delta_{A B}\right)=\Phi\left(\frac{\Delta_{A B}}{\sqrt{2} \beta}\right)
 $$
 
-Then: 
-
-$$\small{\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\int s_A \cdot P\left(s_A \mid A \text { beats } B\right) d s_A \propto
-\mathbb{E}_{s_A}\left[s_A \cdot P\left(A \text { beats } B \mid s_A\right)\right]
-}$$
-
-**Stein's Lemma.** To continue the derivation we will need Stein's Lemma whichis a powerful tool in probability theory, particularly useful when dealing with expectations involving Gaussian random variables. It states that for a normally distributed random variable $X \sim \mathcal{N}\left(\mu, \sigma^2\right)$ and a differentiable function $f$ :
+*Full Joint Density over observed and latent variables*
 
 $$
-\mathbb{E}[X f(X)]=\mu \mathbb{E}[f(X)]+\sigma^2 \mathbb{E}\left[f^{\prime}(X)\right]
-$$
-
-where $f^{\prime}(X)$ is the derivative of $f$ with respect to $X$.
-
-Perfect so, we will set $f$ to: 
-
-$$
-f\left(s_A\right)=P\left(A \text { beats } B \mid s_A\right)=\mathbb{E}_{s_B}\left[\Phi\left(\frac{\Delta_{A B}}{\sqrt{2} \beta}\right)\right]=\Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)
+P\left(X_{A \triangleright B}, s_A, s_B\right)=P\left(X_{A \triangleright B} \mid \Delta_{A B}\right) P\left(s_A\right) P\left(s_B\right)
 $$
 
 $$
-f\left(s_A\right)=\mathbb{E}_{s_B}\left[\Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right)\right]=\int_{-\infty}^{\infty} \Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right) P\left(s_B\right) d s_B
+P\left(X_{A \triangleright B}, s_A, s_B\right)=\Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right) \cdot \mathcal{N}\left(s_A \mid \mu_A, \sigma_A^2\right) \cdot \mathcal{N}\left(s_B \mid \mu_B, \sigma_B^2\right)
 $$
 
-why ? Recall:
-$$
-\Delta_{A B}=s_A-s_B \sim \mathcal{N}\left(\mu_A-\mu_B, \sigma_A^2+\sigma_B^2\right) .
-$$
-Then:
+### Derivation of $P\left(s_A \mid X_{A \triangleright B}=1\right)$
+---
+
+Based on the full joint density, the posterior distribution of the skill of player $A$ given that $A$ wins over $B$ can be derived using the Bayes rule:
 
 $$
-Z = \frac{\Delta_{A B}}{\sqrt{2} \beta}=\frac{s_A-s_B}{\sqrt{2} \beta} \sim \mathcal{N}\left(\frac{\mu_A-\mu_B}{\sqrt{2} \beta}, \frac{\sigma_A^2+\sigma_B^2}{2 \beta^2}\right)
-$$
-This simplify the computation of the expectation as:
-$$
-f\left(s_A\right)=\mathbb{E}_Z[\Phi(Z)]
-$$
-Since $Z$ is normally distributed, this expectation can be further simplified.
-
-To evaluate $\mathbb{E}[\Phi(Z)]$, where $Z \sim \mathcal{N}\left(\mu_Z, \sigma_Z^2\right)$
-
-> We will use this property of gaussian : $$\mathbb{E}[\Phi(a X+b)]=\Phi\left(\frac{a \mu_X+b}{\sqrt{1+a^2 \sigma_X^2}}\right)$$
-
-Which in our case give:
-
-$$
-\mathbb{E}[\Phi(Z)]=\Phi\left(\frac{\mu_Z}{\sqrt{1+\sigma_Z^2}}\right) = \Phi\left(\frac{\frac{s_A-\mu_B}{\sqrt{2} \beta}}{\sqrt{1+\frac{\sigma_B^2}{2 \beta^2}}}\right) = \cdots =\Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)
+P\left(s_A, s_B \mid X_{A \triangleright B}=1\right) \propto \Phi\left(\frac{s_A-s_B}{\sqrt{2} \beta}\right) \cdot \mathcal{N}\left(s_A \mid \mu_A, \sigma_A^2\right) \cdot \mathcal{N}\left(s_B \mid \mu_B, \sigma_B^2\right)
 $$
 
-Let's summarise a bit: 
+Our goal is to find $P\left(s_A \mid X_{A \triangleright B}=1\right)$, which requires integrating out $s_B$ :
 
 $$
-\boxed{f\left(s_A\right)=P\left(A \text { beats } B \mid s_A\right) = \Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)}
+P\left(s_A \mid X_{A \triangleright B}=1\right)=\int_{-\infty}^{\infty} P\left(s_A, s_B \mid X_{A \triangleright B}=1\right) d s_B
 $$
 
-Ok perfect, now we can go back to our original problem.
-
-$$
-P\left(s_A \mid A \text { beats } B\right)=\frac{P\left(A \text { beats } B \mid s_A\right) \cdot P\left(s_A\right)}{P(A \text { beats } B)}
-$$
-
-and thus:
-$$
-\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\frac{\int s_A \cdot P\left(A \text { beats } B \mid s_A\right) \cdot P\left(s_A\right) d s_A}{P(A \text { beats } B)}
-$$
-
-TODO.. expand a bit
-
-$$
-\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\frac{\mathbb{E}_{s_A}\left[s_A \cdot f\left(s_A\right)\right]}{\mathbb{E}_{s_A}\left[f\left(s_A\right)\right]}
-$$
-
-To compute $\mathbb{E}\left[s_A \cdot f\left(s_A\right)\right]$, we utilize Stein's Lemma.
-
-$$
-\mathbb{E}\left[s_A \cdot f\left(s_A\right)\right]=\mu_A \cdot \mathbb{E}\left[f\left(s_A\right)\right]+\sigma_A^2 \cdot \mathbb{E}\left[f^{\prime}\left(s_A\right)\right]
-$$
-
-We have:
-
-$$
-f^{\prime}\left(s_A\right)=\frac{d}{d s_A} \Phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)=\frac{1}{\sqrt{\sigma_B^2+2 \beta^2}} \cdot \phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)
-$$
-
-Then:
-
-$$
-\mathbb{E}\left[s_A \cdot f\left(s_A\right)\right]=\mu_A \cdot \mathbb{E}\left[f\left(s_A\right)\right]+\frac{\sigma_A^2}{\sqrt{\sigma_B^2+2 \beta^2}} \cdot \mathbb{E}\left[\phi\left(\frac{s_A-\mu_B}{\sqrt{\sigma_B^2+2 \beta^2}}\right)\right]
-$$
+This is a nasty integral, but we can solve it analytically.
 
 
 ---
 
-Final Result
-
-$$
-\boxed{\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\mu_A+\frac{\sigma_A^2}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}} \cdot \frac{\phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}{\Phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}}
-$$
-
-{{< details  title="Learn More" >}} 
-fdsfdsafadas
+{{< details  title="Tiny Test" >}} 
+This is a test
 $$
 \boxed{\mathbb{E}\left[s_A \mid A \text { beats } B\right]=\mu_A+\frac{\sigma_A^2}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}} \cdot \frac{\phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}{\Phi\left(\frac{\mu_A-\mu_B}{\sqrt{\sigma_A^2+\sigma_B^2+2 \beta^2}}\right)}}
 $$
@@ -205,9 +132,5 @@ $$
 
 
 
-See [Appendix A](#appendix-a) for more details on Section A.
-See [Appendix B](#appendix-b) for more details on Section B.
-
-{{< appendix title="Appendix" sections="Section A, Section B" />}}
 
 

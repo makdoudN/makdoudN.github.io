@@ -107,18 +107,35 @@ print("Estimated Parameters:", result.x)
 print("Function Value (Negative Log-Likelihood):", result.fun)
 ```
 
+Here, we have derive one model for binary classification. 
+In the next section, we will propose an alternative model for binary classification that is more suitable for ordinal data.
+In practice, this model is never used for binary classification but is will be a simple use-case to understand the modeling process of ordinal regression.
 
-
-## Bayesian Binary Classification with a twist
 ---
+### Bayesian Binary Classification with a twist
 
-**Data Generative Process —** There is a latent continuous variable which censored yield to the ordinal probabilities. Features (or Covariate) influenced the latent variable and as a result influences the final ordinal probabilities.
 
-1. **Latent Variable Model** $z$. The latent variable models a kind of continuous affinity from the first ordinal category to the latest one.
+**Data Generative Process —** 
+We assume that there is a latent continuous variable which censored yield to the ordinal probabilities. Features  influenced the latent variable and as a result influences the final ordinal probabilities.
 
+In contrast to previous approach, we introduce a latent variable $z$ and also a cutpoint $\alpha$ to model the ordinal probabilities.
+
+0. **Prior Distribution.** 
+We start by defining the prior distribution of the unknown parameters.
+It reflects our beliefs about the likely values of the parameters before we have seen any data.
+$$\boldsymbol{\beta} \sim \mathcal{N}\left(\mathbf{0}, \tau^2 \mathbf{I}\right)$$
+$$\alpha \sim \mathcal{N}\left(\mu_\alpha, \sigma_\alpha^2\right)$$
+$$\sigma^2 \sim \operatorname{Inverse-Gamma}\left(\alpha_\sigma, \beta_\sigma\right)$$
+
+
+1. **Latent Variable Model** $z$. The latent variable is the result of a linear combination of the features and the parameters.
+The model will infer the parameters $\boldsymbol{\beta}$ and $\alpha$ from the data. 
+We hope that the model will be able to identify the latent variable $z$ that will allow us to predict the ordinal outcome $y$.
+Intuitively, for the example of the temperature, for a person, the latent variable $z$ will represent a continuous affinity from the coldest to the hottest temperature.
 $$
-z_i =\mathbf{x}_i^{\top} \boldsymbol{\beta}+\varepsilon_i
+z_i =\mathbf{x}_i^{\top} \boldsymbol{\beta}
 $$
+
 
 2. **Threshold Mechanism**.
 The observed ordinal outcome $y_i$ is determined by where $z_i$ falls relative to the cutpoints $\alpha_k$ :
@@ -134,6 +151,18 @@ K & \text{if } z_i > \alpha_{K-1}
 \end{cases}
 $$
 
+The full joint probability is given by:
+$$
+p(\mathbf{y}, \mathbf{z}, \boldsymbol{\beta}, \alpha, \sigma \mid \mathbf{X})=p(\mathbf{y} \mid \mathbf{z}, \alpha) \cdot p(\mathbf{z} \mid \mathbf{X}, \boldsymbol{\beta}, \sigma) \cdot p(\boldsymbol{\beta}) \cdot p(\alpha) \cdot p(\sigma).
+$$
+
+You may be wondering if there is no identification problem here. 
+You would be right, by construction, there is a lot of moving parts because of propagation of uncertainty, cutoffs points are random, the latent variable is also random and so on. 
+This is this uncertainty that leads to uncertainty in the prediction of the ordinal outcome.
+
+**What is the probability of a given ordinal outcome $P\left(y_i \mid \mathbf{x}_i\right)$?**
+
+---
 So, we will need:
 
 $$

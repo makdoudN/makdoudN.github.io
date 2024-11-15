@@ -2,7 +2,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
-  
+  <link href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka/index.css" rel="stylesheet">
+
   <style>
     pre {
         position: relative;
@@ -50,9 +51,13 @@
         display: block;
         padding: 16px;
         overflow-x: auto;
-        font-family: 'JetBrains Mono', 'Fira Code', monospace;
-        font-size: 14px;
+        font-family: 'Iosevka', 'JetBrains Mono', 'Fira Code', monospace;
+        font-size: 16px;
         line-height: 1.5;
+        background: #1a1a1a !important;
+        font-feature-settings: "liga" 0;  /* Disable ligatures for clearer code */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     pre code::-webkit-scrollbar {

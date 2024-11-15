@@ -436,3 +436,10 @@ blockquote p {
   margin-left: 1rem;
   margin-right: 1rem;
 }
+
+p {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+}

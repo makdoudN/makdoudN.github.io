@@ -5,17 +5,23 @@ summary: "A gentle introduction to Bayesian Ordinal Regression"
 description: "A gentle introduction to Bayesian Ordinal Regression"
 toc: false
 readTime: true
-autonumber: true
+autonumber: false
 math: true
 tags: ["Machine Learning", "Bayesian Inference"]
 showTags: false
 hideBackToTop: false
 ---
 
-**What is Ordinal Regression.**  **Ordinal regression** is a type of regression analysis used when the dependent variable is ordinal, meaning the categories have a natural order, but the intervals between them are not necessarily equal. 
+**What is Ordinal Regression.**  Ordinal regression is a type of regression analysis used when the dependent variable is ordinal, meaning the categories have a natural order, but the intervals between them are not necessarily equal. 
+The ordering may be subject to heterogeneity, meaning that different factors or groups may influence how the distances between categories vary, and this can be modeled explicitly using ordinal regression techniques.
 The goal is to predict the ordinal outcomes while considering both the order and the unequal spacing between categories. 
-For example, in a rating scale ("poor," "fair," "good," "excellent"), the difference between "good" and "excellent" might not be the same as between "poor" and "fair." 
-Additionally, this variability in the differences can be subject to heterogeneity, meaning that different factors or groups may influence how the distances between categories vary, and this can be modeled explicitly using ordinal regression techniques.
+
+For example, the temperature feeling is somewhat subjective and can be categorized as "cold", "cool", "neutral", "warm", "hot". 
+Such a categorical variable is ordinal, we know that "cold" is colder than "cool", "cool" is colder than "neutral", etc.
+Still, for one person, the difference between "cool" and "neutral" might not be the same as between "warm" and "hot".
+Different people might have different perceptions of what is cold or hot.
+
+This is where ordinal regression comes in.
 
 **Why it is different from Classical Regression.** Classification treats all categories as independent and does not consider the natural order in ordinal data. For example, "poor" and "excellent" would be treated as equally different from "fair," which ignores the ordinal structure.
 
@@ -26,8 +32,10 @@ Additionally, this variability in the differences can be subject to heterogeneit
 3. **Capturing Heterogeneity**. Ordinal regression allows for modeling heterogeneity between groups or categories. For instance, different population segments may perceive the distance between "good" and "excellent" differently, and this variability can be accounted for in the model.
 4. **Better Interpretability**: Since the model respects the ordinal nature of the data, the results are more interpretable and meaningful when analyzing ordinal outcomes, compared to treating them as continuous or nominal categories.
 
-## A Start with Binary Classification
+How to derive from first principles a Bayesian Ordinal Regression?
+
 ---
+### A detour with Binary Classification
 
 Let's start by assuming we want to predict the binary variable $y$ from a number $N$ features $X \in \mathbb{R}^N$. 
 A common approach in statistic is to use an inverse link function $f$ to (un)surprinsingly links the feature $X$ to the $y$. 
@@ -39,6 +47,10 @@ $$
 \mathbb{E}(y)= p =\frac{1}{1+\exp (-\eta)} \quad \text{with} \quad \eta = \sum X_i \omega_i + b
 $$
 
+**Why this form?**
+We know that $p \in [0,1]$ so we need a function that outputs a value in this range.
+The logistic function is a sigmoid function, that is, it is strictly increasing with values in $(0,1)$.
+So basically, our program will infer $\omega$ that fits the data.
 We can then leverage data to infer $p$ using MLE, MAP, bayesian inference or any approach that fits you.
 
 As an example: here a code to infer the parameters using MLE approaches: 

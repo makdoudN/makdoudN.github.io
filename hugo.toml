@@ -64,7 +64,10 @@ url = "/about"
 # Syntax highligth on code blocks
 [markup]
 [markup.highlight]
-style = 'algol'
+codeFences = false
+guessSyntax = false
+noClasses = false
+
 [markup.goldmark]
 [markup.goldmark.extensions]
     [markup.goldmark.extensions.passthrough]

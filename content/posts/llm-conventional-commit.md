@@ -205,4 +205,12 @@ Make sure the commit is concise, clear, and follows the **Conventional Commit** 
 ---
 ### Python Application
 
-[...]
+Here the gist of the first application in python: TODO<Gist>
+
+[llm_commit.py](https://github.com/n-makdoud/website/blob/main/notebooks/llm_commit.py)
+
+The main problem with this approach are : 
+
+-  $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 1}}} $ Validation of the output is not straightforward.
+-  $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 2}}} $ The git-diff is not always the best source of information to generate a good commit message. Why ? Because it can be massive (example, with notebooks) and it is not always easy to understand what has been changed.
+

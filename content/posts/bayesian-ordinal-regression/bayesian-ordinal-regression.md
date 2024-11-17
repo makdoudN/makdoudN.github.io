@@ -151,74 +151,70 @@ K & \text{if } z_i > \alpha_{K-1}
 \end{cases}
 $$
 
-The full joint probability is given by:
-$$
-p(\mathbf{y}, \mathbf{z}, \boldsymbol{\beta}, \alpha, \sigma \mid \mathbf{X})=p(\mathbf{y} \mid \mathbf{z}, \alpha) \cdot p(\mathbf{z} \mid \mathbf{X}, \boldsymbol{\beta}, \sigma) \cdot p(\boldsymbol{\beta}) \cdot p(\alpha) \cdot p(\sigma).
-$$
+A graphical representation of the data generative process is the following:
 
-You may be wondering if there is no identification problem here. 
-You would be right, by construction, there is a lot of moving parts because of propagation of uncertainty, cutoffs points are random, the latent variable is also random and so on. 
-This is this uncertainty that leads to uncertainty in the prediction of the ordinal outcome.
+![img](/posts/bayesian-ordinal-regression/generative-process.png)
+
 
 **What is the probability of a given ordinal outcome $P\left(y_i \mid \mathbf{x}_i\right)$?**
 
+Given the threshold mechanism, the probability of a given ordinal outcome $P\left(y_i \mid \mathbf{x}_i\right)$ is the probability that the latent variable $z_i$ falls within the interval defined by the threshold $\alpha_{k-1}$ and $\alpha_k$.
+
+$$ P(y=k | \mathbf{x})= P(\alpha_{k-1} < z \leq \alpha_k \mid \mathbf{x})= \Phi\left(\frac{\alpha_k-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)-\Phi\left(\frac{\alpha_{k-1}-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)$$
+
+
+{{< details  title="Full Derivation" >}} 
+
+Since $z \sim \mathcal{N}\left(\mathbf{x}^{\top} \boldsymbol{\beta}, \sigma^2\right)$, we standardize $z$ to the standard normal distribution $(\mathcal{N}(0,1))$ using the transformation:
+
+$$
+z^{\prime}=\frac{z-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma} \quad \text { so that } z^{\prime} \sim \mathcal{N}(0,1)
+$$
+
+Rewriting the thresholds in terms of $z^{\prime}$ :
+
+$$
+P(y=k \mid \mathbf{x})= P\left(\frac{\alpha_{k-1}-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma} < z' \leq \frac{\alpha_k-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)
+$$
+
+For $z^{\prime} \sim \mathcal{N}(0,1)$, the cumulative distribution function (CDF) of $z^{\prime}$, denoted as $\Phi(\cdot)$, gives:
+
+$$
+P(y=k \mid \mathbf{x})=\Phi\left(\frac{\alpha_k-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)-\Phi\left(\frac{\alpha_{k-1}-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)
+$$
+
+
+{{< /details >}}
+
+
+
+
+
+
+
+
+
+
+
 ---
-So, we will need:
+## Archive 
 
+You may be wondering if there is no identification problem here. 
+By indentification problem, we mean that the model may not be able to distinguish between different parameters.
+This is a problem because we want to infer the parameters from the data.
+
+**Threshold and Latent Variable Shift**. The threshold and the latent variable may be shifted by the same constant without changing the ordinal outcome. 
 $$
-P(y_i=k \mid \mathbf{x}_i) = P(\alpha_{k-1} < z_i \leq \alpha_k \mid \mathbf{x}_i)
+z_i \rightarrow z_i+c \quad \text { and } \quad \alpha_k \rightarrow \alpha_k+c,
 $$
+Those shift would lead $P\left(y_i \mid z_i, \alpha\right)$ unchanged. 
+This creates a non-identifiability issue because $z_i$ and $\alpha_k$ are not uniquely determined.
 
-Substitute the Latent Variable Model:
+**Shifting Thresholds by a Constant $c$ :** (TODO)
 
-$$
-P\left(y_i=k \mid \mathbf{x}_i\right)=P\left(\alpha_{k-1}<\mathbf{x}_i^{\top} \boldsymbol{\beta}+\varepsilon_i \leq \alpha_k \mid \mathbf{x}_i\right)
-$$
-
-Isolate the Error Term $\varepsilon_i$ :
-
-$$P\left(y_i=k \mid \mathbf{x}_i\right)=P\left(\alpha_{k-1}-\mathbf{x}_i^{\top} \boldsymbol{\beta}<\varepsilon_i \leq \alpha_k-\mathbf{x}_i^{\top} \boldsymbol{\beta}\right)$$
-
-Express in Terms of the CDF $G$ — *TODO Explain More* :
-
-Since $\varepsilon_i$ has $\operatorname{CDF} G$ :
-
-$$
-P\left(y_i=k \mid \mathbf{x}_i\right)=G\left(\alpha_k-\mathbf{x}_i^{\top} \boldsymbol{\beta}\right)-G\left(\alpha_{k-1}-\mathbf{x}_i^{\top} \boldsymbol{\beta}\right)
-$$
-
-In the special case of a **binary ordinal classification**, there are only two categories:
-- Categories: $k=1$ and $k=2$
-- Thresholds: $\alpha_0=-\infty, \alpha_1, \alpha_2=\infty$
-
-Compute Probabilities
-1. For $k=1$ :
-
-$$
-P\left(y_i=1 \mid \mathbf{x}_i\right)=G\left(\alpha_1-\mathbf{x}_i^{\top} \boldsymbol{\beta}\right)-G\left(-\infty-\mathbf{x}_i^{\top} \boldsymbol{\beta}\right)
-$$
+---
 
 
-Since $G(-\infty)=0$ :
-
-$$
-P\left(y_i=1 \mid \mathbf{x}_i\right)=G\left(\alpha_1-\mathbf{x}_i^{\top} \boldsymbol{\beta}\right)
-$$
-
-2. For $k=2$ :
-
-$$
-P\left(y_i=2 \mid \mathbf{x}_i\right)=G\left(\infty-\mathbf{x}_i^{\top} \boldsymbol{\beta}\right)-G\left(\alpha_1-\mathbf{x}_i^{\top} \boldsymbol{\beta}\right)
-$$
-
-
-Since $G(\infty)=1$ :
-
-$$
-P\left(y_i=2 \mid \mathbf{x}_i\right)=1-G\left(\alpha_1-\mathbf{x}_i^{\top} \boldsymbol{\beta}\right)
-$$
-
-We can adapt the previous code with the following likelihood (with some tiny change at the level of the optimizer)
 
 ```python
 def binary_ordinal_nll(theta, X, y):
@@ -256,10 +252,3 @@ def binary_ordinal_nll(theta, X, y):
     nll = -np.sum(y * np.log(prob) + (1 - y) * np.log(1 - prob))
     return nll
 ```
-
-
-
-
-
-
-

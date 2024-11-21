@@ -15,6 +15,7 @@ hideBackToTop: false
 # LLM for Conventional Commit Messages
 
 In software development, writing clear and concise commit messages is crucial for maintaining a well-documented project history. 
+
 As a Data Scientist, I am not used to write **good** commit messages.
 
 Conventional commit messages follow a standardized format that helps in understanding the nature of changes, automating release notes, and improving collaboration among team members. 

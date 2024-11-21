@@ -123,17 +123,18 @@ In contrast to previous approach, we introduce a latent variable $z$ and also a 
 0. **Prior Distribution.** 
 We start by defining the prior distribution of the unknown parameters.
 It reflects our beliefs about the likely values of the parameters before we have seen any data.
-$$\boldsymbol{\beta} \sim \mathcal{N}\left(\mathbf{0}, \tau^2 \mathbf{I}\right)$$
-$$\alpha \sim \mathcal{N}\left(\mu_\alpha, \sigma_\alpha^2\right)$$
-$$\sigma^2 \sim \operatorname{Inverse-Gamma}\left(\alpha_\sigma, \beta_\sigma\right)$$
+In this section, we will assume that the ==cutpoints== are fixed and known.
+
+$$\boldsymbol{\beta} \sim \mathcal{N}\left(\mathbf{0}, \sigma_\beta^2\right)$$
 
 
 1. **Latent Variable Model** $z$. The latent variable is the result of a linear combination of the features and the parameters.
 The model will infer the parameters $\boldsymbol{\beta}$ and $\alpha$ from the data. 
 We hope that the model will be able to identify the latent variable $z$ that will allow us to predict the ordinal outcome $y$.
 Intuitively, for the example of the temperature, for a person, the latent variable $z$ will represent a continuous affinity from the coldest to the hottest temperature.
+
 $$
-z_i =\mathbf{x}_i^{\top} \boldsymbol{\beta}
+z = \mathbf{x}_i^{\top} \boldsymbol{\beta}
 $$
 
 
@@ -151,10 +152,87 @@ K & \text{if } z_i > \alpha_{K-1}
 \end{cases}
 $$
 
-A graphical representation of the data generative process is the following:
+A simple code in numpyro to fit the model:
 
-![img](/posts/bayesian-ordinal-regression/generative-process.png)
+```python
+import jax
+import jax.numpy as jnp
+import numpy as np
+import numpyro
+import numpyro.distributions as dist
+from numpyro.infer import MCMC, NUTS
 
+fixed_thresholds = np.array([-1.0, 0, 1])  # Fixed cutpoints
+
+def ordinal_probit_model(X, y, alpha_cutpoints, sigma_beta=2.0, sigma_z=1.0):
+    """
+    Bayesian Ordinal Probit Model with fixed cutpoints and latent variables.
+    For identification, we fix sigma_z=1.0 (standard probit model assumption).
+    
+    Args:
+        X (array): Input features of shape (n_samples, n_features)
+        y (array): Target ordinal labels of shape (n_samples,)
+        alpha_cutpoints (array-like): Fixed cutoff points for ordinal categories
+        sigma_beta (float): Standard deviation for beta prior
+    """
+    # Get dimensions
+    n_samples, num_features = X.shape
+    num_categories = len(alpha_cutpoints) + 1
+        
+    # Sample regression coefficients from prior with larger variance
+    beta = numpyro.sample(
+        "beta",
+        dist.Normal(
+            loc=jnp.zeros(num_features),
+            scale=jnp.ones(num_features) * sigma_beta
+        )
+    )
+    
+    z = jnp.dot(X, beta)
+    
+    # Compute probabilities using the standard normal CDF
+    probs = jnp.zeros((n_samples, num_categories))
+    
+    # Binary classification case
+    # P(y=1) = P(z ≤ α)
+    p1 = numpyro.distributions.Normal(0, 1).cdf((alpha_cutpoints[0] - z))
+    probs = probs.at[:, 0].set(p1)
+    probs = probs.at[:, 1].set(1 - p1)
+
+    # Ensure probabilities sum to 1 and are positive
+    probs = jnp.clip(probs, 1e-8, 1.0)
+    probs = probs / probs.sum(axis=1, keepdims=True)
+    
+    # Sample observations
+    with numpyro.plate("obs", n_samples):
+        numpyro.sample("y", dist.Categorical(probs=probs), obs=y)
+
+nuts_kernel = NUTS(ordinal_probit_model)
+mcmc = MCMC(nuts_kernel, num_warmup=1500, num_samples=2000, num_chains=1)
+mcmc.run(jax.random.PRNGKey(0), X=X, y=y, alpha_cutpoints=fixed_thresholds)
+
+```
+
+TODO: Improve the code that could leverage numpyro better.
+
+TODO: See that it fits well with the data. 
+
+TODO: Speak about the cutoffs points that are fixed 
+
+TODO: Speak about changing the cutoffs points if unknown 
+
+TODO: Should we care about cutoffs points ? 
+
+TODO: Speak about non identificability of cutoffs points.
+
+
+---
+Full Bayesian Approach to Ordinal Regression
+
+TODO
+
+---
+# Archive
 
 **What is the probability of a given ordinal outcome $P\left(y_i \mid \mathbf{x}_i\right)$?**
 
@@ -183,72 +261,54 @@ $$
 P(y=k \mid \mathbf{x})=\Phi\left(\frac{\alpha_k-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)-\Phi\left(\frac{\alpha_{k-1}-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)
 $$
 
-
 {{< /details >}}
 
-
-
-
-
-
-
-
-
-
-
----
-## Archive 
-
-You may be wondering if there is no identification problem here. 
-By indentification problem, we mean that the model may not be able to distinguish between different parameters.
-This is a problem because we want to infer the parameters from the data.
-
-**Threshold and Latent Variable Shift**. The threshold and the latent variable may be shifted by the same constant without changing the ordinal outcome. 
-$$
-z_i \rightarrow z_i+c \quad \text { and } \quad \alpha_k \rightarrow \alpha_k+c,
-$$
-Those shift would lead $P\left(y_i \mid z_i, \alpha\right)$ unchanged. 
-This creates a non-identifiability issue because $z_i$ and $\alpha_k$ are not uniquely determined.
-
-**Shifting Thresholds by a Constant $c$ :** (TODO)
-
----
-
-
+It is relatively easy to adapt this derivation to the MLE case and to derive a code to fit the model:
 
 ```python
-def binary_ordinal_nll(theta, X, y):
+def ordinal_nll(X, y, theta, thresholds, sigma=1.0):
     """
-    Negative log-likelihood for binary ordinal regression.
+    Compute the negative log-likelihood for ordinal regression (vectorized).
 
     Parameters:
-    theta : ndarray
-        Parameter vector including both beta coefficients and the threshold alpha_1.
-        Length is n_features + 1.
     X : ndarray
-        Feature matrix.
+        Feature matrix where each row represents a sample and each column represents a feature.
     y : ndarray
-        Target vector with binary outcomes (0 or 1).
+        Target vector where each element is the target ordinal value for the corresponding sample.
+    theta : ndarray
+        Parameter vector for features (weights).
+    thresholds : ndarray
+        Thresholds for ordinal categories (K-1 cutpoints).
+    sigma : float
+        Standard deviation of the latent variable.
 
     Returns:
     float
         The negative log-likelihood value.
     """
-    _, n_features = X.shape
-    beta = theta[:n_features]
-    alpha_1 = theta[n_features]  # Threshold parameter
+    # Compute the linear predictor
+    linear_pred = X @ theta  # shape: [n_samples]
 
-    # Linear predictor
-    eta = X @ beta
+    # Prepend -inf and append +inf to thresholds for boundary conditions
+    thresholds = np.concatenate([[-np.inf], thresholds, [np.inf]])
+    
+    # Compute probabilities for each category (vectorized)
+    cdf_upper = norm.cdf((thresholds[y + 1] - linear_pred) / sigma)
+    cdf_lower = norm.cdf((thresholds[y] - linear_pred) / sigma)
+    prob_y = cdf_upper - cdf_lower
 
-    # Compute probability using logistic CDF
-    # P(y_i = 1 | x_i) = G(alpha_1 - eta)
-    G = lambda z: 1 / (1 + np.exp(-z))
-    prob = G(alpha_1 - eta)
-
-    # For y_i = 1, use prob; for y_i = 0, use 1 - prob
-    # Ensure numerical stability
-    prob = np.clip(prob, 1e-15, 1 - 1e-15)
-    nll = -np.sum(y * np.log(prob) + (1 - y) * np.log(1 - prob))
-    return nll
+    # Avoid log(0) with numerical stability
+    prob_y = np.clip(prob_y, 1e-15, 1 - 1e-15)
+    
+    # Compute negative log-likelihood
+    return -np.sum(np.log(prob_y))
 ```
+
+
+
+
+
+
+
+
+[. . .]

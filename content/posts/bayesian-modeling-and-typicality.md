@@ -1,6 +1,6 @@
 ---
 title: "Bayesian Modeling and Typicality — WIP"
-date: "2024-10-01"
+date: "2024-12-01"
 summary: "Understanding typicality in Bayesian modeling"
 description: "An exploration of how typicality affects Bayesian modeling and inference"
 toc: false

@@ -1,6 +1,6 @@
 ---
 title: "LoRa and Controlnet for Flux from scratch — WIP"
-date: "2024-10-01"
+date: "2024-12-01"
 summary: "WIP"
 description: "WIP"
 toc: false

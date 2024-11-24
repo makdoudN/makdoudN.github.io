@@ -12,6 +12,8 @@ showTags: false
 hideBackToTop: false
 ---
 
+
+
 **What is Ordinal Regression.**  Ordinal regression is a type of regression analysis used when the dependent variable is ordinal, meaning the categories have a natural order, but the intervals between them are not necessarily equal. 
 The ordering may be subject to heterogeneity, meaning that different factors or groups may influence how the distances between categories vary, and this can be modeled explicitly using ordinal regression techniques.
 The goal is to predict the ordinal outcomes while considering both the order and the unequal spacing between categories. 
@@ -217,98 +219,273 @@ TODO: Improve the code that could leverage numpyro better.
 
 TODO: See that it fits well with the data. 
 
-TODO: Speak about the cutoffs points that are fixed 
+In this case, we have fixed the cutpoints points. 
+It means that it assumes that you know the cutpoints points. 
+Which is unlikely in practice. 
+Still, it is a good use-case to understand the model and if you do not really care about the true inference and only want prediction, it may be enough. 
+Well, if prediction is all you care about, you probably do not need Bayesian statistics. 
 
-TODO: Speak about changing the cutoffs points if unknown 
+Now, if you care about inference, you probably want to infer the cutpoints points from the data.
+Assuming that the data generative process of ordinal regression, you should want to infer both the affinity parameters $\beta$ and the cutpoints points $\alpha$. 
 
-TODO: Should we care about cutoffs points ? 
-
-TODO: Speak about non identificability of cutoffs points.
+The main problem is that the cutpoints points are not identifiable.  
+You may sense it but with this data  generative story, there is a lot a random variable. 
+Maintaining identifiability is a tricky task. 
+These cut points are constrained by ordering ( $c_1<c_2<\cdots<c_{K-1}$ ), making regularization tricky.
+Naïvely defining priors on the latent cut points without considering their ordering can lead to non-identifiable or poorly-behaved posterior distributions.
+Additionally, domain expertise is challenging to incorporate directly in this latent space because it's abstract.
+As it is a common routine in Bayesian Inference, Identifiability is key for proper inference. 
+Commonly, we will need to use strong priors to identify the parameters.  
 
 
 ---
-Full Bayesian Approach to Ordinal Regression
+### Full Bayesian Approach to Ordinal Regression
 
-TODO
+I will strongly used the article from [Michael Betancourt](https://betanalpha.github.io/assets/case_studies/ordinal_regression.html) to derive the model.
 
----
-# Archive
+Let be clear, I am not an expert in Bayesian Inference. 
+But I will try to do my best to understand the model. 
 
-**What is the probability of a given ordinal outcome $P\left(y_i \mid \mathbf{x}_i\right)$?**
+Let's restart from our hypothesis of data generative process.
+Suppose the latent variable $z$ determines the category $y \in\{1, \ldots, K\}$.
+The cut points $\left(c_1, c_2, \ldots, c_{K-1}\right)$ partition the real line:
 
-Given the threshold mechanism, the probability of a given ordinal outcome $P\left(y_i \mid \mathbf{x}_i\right)$ is the probability that the latent variable $z_i$ falls within the interval defined by the threshold $\alpha_{k-1}$ and $\alpha_k$.
+$$y = k \quad \text{if} \quad c_{k-1} < z \leq c_k$$
 
-$$ P(y=k | \mathbf{x})= P(\alpha_{k-1} < z \leq \alpha_k \mid \mathbf{x})= \Phi\left(\frac{\alpha_k-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)-\Phi\left(\frac{\alpha_{k-1}-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)$$
+where $c_0=-\infty$ and $c_K=+\infty$
 
+Our objective is to derive the probability of a category given the features $X$ and the parameters $\beta$ and $c$.
+The probability of $y=k$ is expressed in terms of the latent variable and cut points:
 
-{{< details  title="Full Derivation" >}} 
+$$ p_k = P(c_{k-1} < z \leq c_k) $$
 
-Since $z \sim \mathcal{N}\left(\mathbf{x}^{\top} \boldsymbol{\beta}, \sigma^2\right)$, we standardize $z$ to the standard normal distribution $(\mathcal{N}(0,1))$ using the transformation:
-
-$$
-z^{\prime}=\frac{z-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma} \quad \text { so that } z^{\prime} \sim \mathcal{N}(0,1)
-$$
-
-Rewriting the thresholds in terms of $z^{\prime}$ :
+The ordinal probabilities $\left(p_1, p_2, \ldots, p_K\right)$ are constrained:
 
 $$
-P(y=k \mid \mathbf{x})= P\left(\frac{\alpha_{k-1}-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma} < z' \leq \frac{\alpha_k-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)
+\sum_{k=1}^K p_k=1, \quad p_k \geq 0
 $$
 
-For $z^{\prime} \sim \mathcal{N}(0,1)$, the cumulative distribution function (CDF) of $z^{\prime}$, denoted as $\Phi(\cdot)$, gives:
+This places $\left(p_1, \ldots, p_K\right)$ on a $(K-1)$-dimensional simplex.
+Given probabilities $\left(p_1, \ldots, p_K\right)$, we can compute the cut points through the cumulative probabilities:
 
 $$
-P(y=k \mid \mathbf{x})=\Phi\left(\frac{\alpha_k-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)-\Phi\left(\frac{\alpha_{k-1}-\mathbf{x}^{\top} \boldsymbol{\beta}}{\sigma}\right)
+P(y \leq k)=\sum_{j=1}^k p_j
 $$
 
-{{< /details >}}
+Let $q_k=P(y \leq k)$ (the cumulative probabilities), then:
 
-It is relatively easy to adapt this derivation to the MLE case and to derive a code to fit the model:
+$$
+q_k=p_1+\cdots+p_k, \quad q_0=0, \quad q_K=1 .
+$$
 
-```python
-def ordinal_nll(X, y, theta, thresholds, sigma=1.0):
-    """
-    Compute the negative log-likelihood for ordinal regression (vectorized).
+The mapping of cumulative probabilities $q_k$ to cut points $c_k$ through a general inverse link function $g^{-1}$ is a critical step in ordinal regression. Let's delve deeply into the mechanics of this process.
+The link function $g$ and its inverse $g^{-1}$ serve as the bridge between two spaces:
+- Cumulative Probabilities: $q_k \in[0,1]$ lie in a bounded, probabilistic space.
+- Latent Continuous Scale: $c_k \in \mathbb{R}$, which partitions the real line into intervals corresponding to ordinal categories.
 
-    Parameters:
-    X : ndarray
-        Feature matrix where each row represents a sample and each column represents a feature.
-    y : ndarray
-        Target vector where each element is the target ordinal value for the corresponding sample.
-    theta : ndarray
-        Parameter vector for features (weights).
-    thresholds : ndarray
-        Thresholds for ordinal categories (K-1 cutpoints).
-    sigma : float
-        Standard deviation of the latent variable.
+The inverse link function $g^{-1}$ transforms the bounded cumulative probabilities $q_k$ into cut points $c_k$, which live on the real line while preserving their natural ordering.
 
-    Returns:
-    float
-        The negative log-likelihood value.
-    """
-    # Compute the linear predictor
-    linear_pred = X @ theta  # shape: [n_samples]
 
-    # Prepend -inf and append +inf to thresholds for boundary conditions
-    thresholds = np.concatenate([[-np.inf], thresholds, [np.inf]])
-    
-    # Compute probabilities for each category (vectorized)
-    cdf_upper = norm.cdf((thresholds[y + 1] - linear_pred) / sigma)
-    cdf_lower = norm.cdf((thresholds[y] - linear_pred) / sigma)
-    prob_y = cdf_upper - cdf_lower
+$$
+c_k=g^{-1}\left(q_k\right), \quad k=1, \ldots, K-1
+$$
 
-    # Avoid log(0) with numerical stability
-    prob_y = np.clip(prob_y, 1e-15, 1 - 1e-15)
-    
-    # Compute negative log-likelihood
-    return -np.sum(np.log(prob_y))
+
+The link function $g$ defines the relationship between the latent continuous scale (cut points) and the cumulative probabilities. 
+This function is monotonic, ensuring that the order of $q_k$ is preserved in the order of $c_k$.
+
+In order to realize the link between cut points and the cumulative probabilities $q_k$, the link function needs to adhere some properties
+
+- If $q_k \leq q_{k+1}$, then $g^{-1}\left(q_k\right) \leq g^{-1}\left(q_{k+1}\right)$. This means:
+
+$$
+c_1=g^{-1}\left(q_1\right)<c_2=g^{-1}\left(q_2\right)<\cdots<c_{K-1}=g^{-1}\left(q_{K-1}\right) .
+$$
+
+Monotonicity is a key property for ensuring that the cut points partition the real line correctly.
+
+The cumulative probabilities $q_k$ are constrained to $[0,1]$, which makes it difficult to directly define a model for the cut points on the unbounded real line. $g^{-1}$ maps these probabilities into the real line $\mathbb{R}$ while retaining the ordering.
+
+The choice of $g$ depends on the specific needs of the model, as it defines how probabilities relate to the latent scale. For example:
+- A logistic link $g(q)=\sigma(c)$ reflects the standard logistic distribution.
+- A probit link $g(q)=\Phi(c)$ reflects the standard normal distribution.
+
+**Regularization Induced by the Dirichlet Prior**. When $q_k$ is derived from a Dirichlet prior on $\left(p_1, \ldots, p_K\right)$, the mapping via $g^{-1}$ :
+1. Regularizes the spacing of the cut points $c_k$ implicitly.
+2. Ensures that the cut points respect the ordering constraint.
+
+What is interesting is that the prior of $\mathbf{p}$ impacts indirectly the cut points.
+
+```
+    c_k → p_k ← Dirichlet(α) → y
 ```
 
+The Dirichlet prior regularizes $p_k$, and this regularization propagates backward to constrain $c_k$
+
+So to summarise the new data generative process is the following:
+
+### Observational Model
+
+**Observational Data**. The observed data consists of ordinal outcomes $y_i \in\{1,2, \ldots, K\}$, where $y_i$ represents a category assigned based on an underlying latent process.
+
+**Observation Model**. The following likelihood for the observations:
+
+$$
+P\left(y_i=k \mid z_i, \mathbf{c}\right)= \begin{cases}P\left( z_i \leq c_1\right), & \text { if } k=1 \\ P(c_{k-1} < z_i \leq c_k), & \text { if } 2 \leq k \leq K-1 \\ P\left(z_i>c_{K-1}\right), & \text { if } k=K\ \end{cases}
+$$
+
+where:
+- $z_i$ is the latent variable for observation $i$.
+- $\mathbf{c}=\left(c_1, \ldots, c_{K-1}\right)$ are the latent cut points dividing the real line into intervals corresponding to the $K$ ordinal categories.
+
+The likelihood for $y_i$ can be expressed more compactly as:
+
+$$
+P\left(y_i=k \mid z_i, \mathbf{c}\right)= \begin{cases}\Phi\left(c_1-z_i\right), & \text { if } k=1 \\ \Phi\left(c_k-z_i\right)-\Phi\left(c_{k-1}-z_i\right), & \text { if } 2 \leq k \leq K-1 \\ 1-\Phi\left(c_{K-1}-z_i\right), & \text { if } k=K\end{cases}
+$$
+
+where $\Phi$ is the CDF of the noise distribution (e.g., standard normal or logistic).
+
+### **Latent Structure**
+
+#### Affinity Structure $\beta$
+
+The regression coefficients $\boldsymbol{\beta}$ (the relationship between covariates $\mathbf{x}_i$ and the latent variable $z_i$ ) are modeled with a Gaussian prior:
+
+$$
+\boldsymbol{\beta} \sim \mathcal{N}\left(\boldsymbol{\mu}_\beta, \Sigma_\beta\right),
+$$
+
+where:
+- $\boldsymbol{\mu}_\beta$ is the mean vector (prior belief about $\boldsymbol{\beta}$ ).
+- $\Sigma_\beta$ is the covariance matrix (prior uncertainty in $\boldsymbol{\beta}$ ).
 
 
+The latent variable $z_i$ is modeled as:
+
+$$
+z_i \sim \mathcal{N}\left(f\left(\mathbf{x}_i ; \boldsymbol{\beta}\right), \sigma_z^2\right),
+$$
+
+where:
+- $f\left(\mathbf{x}_i ; \boldsymbol{\beta}\right)=\mathbf{x}_i^{\top} \boldsymbol{\beta}$ (linear predictor).
+- $\sigma_z^2$ is the variance of $z_i$, capturing additional noise beyond the covariate effects.
+
+Alternatively, we can express this as:
+
+$$
+z_i=\mathbf{x}_i^{\top} \boldsymbol{\beta}+\epsilon_i, \quad \epsilon_i \sim \mathcal{N}\left(0, \sigma_z^2\right) .
+$$
+
+#### Cut Points Modeling
+
+The cut points $\mathbf{c}=\left(c_1, c_2, \ldots, c_{K-1}\right)$ define the boundaries between ordinal categories in the latent space.
+
+They are implicitely regularized by imposing a prior over $p$
+
+$$
+\mathbf{p} \sim \operatorname{Dirichlet}(\boldsymbol{\alpha})
+$$
+
+where $\mathbf{p}$ represents the simplex-constrained category probabilities.
+
+The link between $\mathbf{p}$ is the following:
+- 1 **Cumulative Probabilities** are  $q_k=\sum_{j=1}^k p_j, \quad k=1, \ldots, K-1$
+- 2 The link between **Cumulative Probabilities** and **Cut Points** is through the inverse link function $g^{-1}$ 
+
+$$
+c_k=g^{-1}\left(q_k\right), \quad k=1, \ldots, K-1
+$$
 
 
+### **Summary of the Generative Process**
+
+1. Draw $\left(p_1, \ldots, p_K\right)$ from a Dirichlet prior to impose smoothness and simplex constraints.
+2. Compute cumulative probabilities $q_k=\sum_{j=1}^k p_j$, ensuring monotonicity.
+3. Map $q_k$ to cut points $c_k=g^{-1}\left(q_k\right)$ in the latent space, preserving ordering.
+4. Generate latent variables $z_i$ based on a predictor function and noise.
+5. Assign ordinal outcomes $y_i$ based on the intervals defined by $c_k$.
+
+### An example of code using `numpyro`
+
+```python
+import jax
+import numpyro
+import numpyro.distributions as dist
+import jax.numpy as jnp
+from jax import random
+from jax.scipy.stats import norm
+from numpyro.infer import MCMC, NUTS
+from numpyro.distributions import constraints, CategoricalProbs
+from numpyro.distributions.util import promote_shapes
+
+class OrderedProbit(CategoricalProbs):
+    """
+    A categorical distribution with ordered outcomes, using a Probit link.
+
+    :param numpy.ndarray predictor: predictions in the real domain; typically the output
+        of a linear model.
+    :param numpy.ndarray cutpoints: positions in the real domain to separate categories.
+    """
+
+    arg_constraints = {
+        "predictor": constraints.real,
+        "cutpoints": constraints.ordered_vector,
+    }
+
+    def __init__(self, predictor, cutpoints, *, validate_args=None):
+        if jnp.ndim(predictor) == 0:
+            (predictor,) = promote_shapes(predictor, shape=(1,))
+        else:
+            predictor = predictor[..., None]
+        predictor, cutpoints = promote_shapes(predictor, cutpoints)
+        self.predictor = predictor[..., 0]
+        self.cutpoints = cutpoints
+
+        # Compute cumulative probabilities using the probit link (normal CDF)
+        cdf = norm.cdf
+        probs = jnp.concatenate([
+            cdf(self.cutpoints[..., 0] - self.predictor[..., None]),
+            cdf(self.cutpoints[..., 1:] - self.predictor[..., None]) -
+            cdf(self.cutpoints[..., :-1] - self.predictor[..., None]),
+            1.0 - cdf(self.cutpoints[..., -1] - self.predictor[..., None])
+        ], axis=-1)
+
+        super(OrderedProbit, self).__init__(probs, validate_args=validate_args)
+
+    @staticmethod
+    def infer_shapes(predictor, cutpoints):
+        batch_shape = jnp.broadcast_shapes(predictor.shape, cutpoints[:-1].shape)
+        event_shape = ()
+        return batch_shape, event_shape
+
+    def entropy(self):
+        raise NotImplementedError
 
 
+def ordinal_regression_model(X, y=None, n_categories=4):
+    n_features = X.shape[1]
+    
+    # Priors for regression coefficients
+    beta = numpyro.sample("beta", 
+        dist.Normal(jnp.zeros(n_features), jnp.ones(n_features))
+    )
+    
+    # Dirichlet prior for category probabilities
+    alpha = jnp.ones(n_categories)
+    p = numpyro.sample("p", dist.Dirichlet(alpha))
+    
+    # Cumulative probabilities derived from p
+    q = jnp.cumsum(p[:-1])
+    
+    # Cut points derived using probit link (inverse CDF of normal distribution)
+    cut_points = numpyro.deterministic("cut_points", dist.Normal(0, 1).icdf(q))
+    
+    # Linear predictor for latent variable z
+    z = jnp.dot(X, beta)
+    
+    # Observational model
+    with numpyro.plate("data", X.shape[0]):
+        numpyro.sample("y", OrderedProbit(predictor=z, cutpoints=cut_points), obs=y)
 
-[. . .]
+```

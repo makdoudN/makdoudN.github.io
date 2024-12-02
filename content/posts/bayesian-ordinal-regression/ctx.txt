@@ -1,0 +1,1 @@
+1. I do not understand why p_k=P\left(c_{k-1}<z \leq c_k\right) and still we put a prior (dirichlet) on it

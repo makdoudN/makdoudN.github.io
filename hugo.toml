@@ -61,6 +61,7 @@ url = "/posts"
 name = "about"
 url = "/about"
 
+
 # Syntax highligth on code blocks
 [markup]
 [markup.highlight]
@@ -69,12 +70,14 @@ guessSyntax = false
 noClasses = false
 
 [markup.goldmark]
-[markup.goldmark.extensions]
+  [markup.goldmark.extensions]
+    # Enable passthrough for math equations
     [markup.goldmark.extensions.passthrough]
-    enable = true
-    [markup.goldmark.extensions.passthrough.delimiters]
-        block = [['\[', '\]'], ['$$', '$$']]
-        inline = [['\(', '\)'], ['$', '$']]
+      enable = true
+      [markup.goldmark.extensions.passthrough.delimiters]
+        block = [['\[', '\]'], ['$$', '$$']]  # For block/display math
+        inline = [['\(', '\)'], ['$', '$']]   # For inline math
+    
 
 # Giscus comments
 [params.giscus]

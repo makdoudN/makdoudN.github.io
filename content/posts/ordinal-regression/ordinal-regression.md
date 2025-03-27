@@ -1,13 +1,13 @@
 ---
-title: "Bayesian Ordinal Regression"
+title: "An introduction to Ordinal Regression"
 date: "2024-10-01"
-summary: "A gentle introduction to Bayesian Ordinal Regression"
-description: "A gentle introduction to Bayesian Ordinal Regression"
+summary: " "
+description: " "
 toc: false
 readTime: true
 autonumber: false
 math: true
-tags: ["Machine Learning", "Bayesian Inference"]
+tags: ["Machine Learning"]
 showTags: false
 hideBackToTop: false
 ---
@@ -295,7 +295,7 @@ def predict(params, X, K):
     return np.argmax(probas, axis=1)
 
 # Set up parameters
-K = 7  # 7 wine quality categories
+K = 7  # 7 wine quality categories (I use the wine quality dataset)
 n_features = X_train.shape[1]  # 11 features
 
 # Initialize parameters

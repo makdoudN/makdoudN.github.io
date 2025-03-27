@@ -1,1 +1,8 @@
 /* Place custom css here */
+
+/* Option 2: Modern highlight with subtle background */
+mark {
+    background-color: rgba(255, 242, 97, 0.6);
+    padding: 0 4px;
+    border-radius: 2px;
+}

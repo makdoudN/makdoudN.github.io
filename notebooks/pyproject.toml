@@ -1,0 +1,20 @@
+[project]
+name = "notebooks"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "einops>=0.8.1",
+    "einx>=0.3.0",
+    "ipywidgets>=8.1.5",
+    "jupyterlab>=4.3.6",
+    "lightgbm>=4.6.0",
+    "matplotlib>=3.10.1",
+    "networkx>=3.4.2",
+    "pandas>=2.2.3",
+    "scikit-learn>=1.6.1",
+    "scipy>=1.15.2",
+    "seaborn>=0.13.2",
+    "watermark>=2.5.0",
+]

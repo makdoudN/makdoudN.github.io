@@ -361,6 +361,6 @@ def ordinal_regression_model(X, y=None, n_categories=4):
     
     # Observational model
     with numpyro.plate("data", X.shape[0]):
-        numpyro.sample("y", OrderedProbit(predictor=z, cutpoints=cut_points), obs=y)
+        numpyro.sample("y", OrderedProbit(predictor=z, cutpoints=cut_points), obs=y)****
 
 ```

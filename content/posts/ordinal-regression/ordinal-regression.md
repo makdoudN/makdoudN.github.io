@@ -225,13 +225,13 @@ We are now ready to derive multi-class ordinal regression which is a simple adap
 The observed ordinal outcome $y \in\{1,2, \ldots, K\}$ is determined by comparing the latent variable $z$ to multiple ordered thresholds $\alpha_1<\alpha_2<\cdots<\alpha_{K-1}$ :
 
 $$
-y= \begin{cases}1 & \text { if } z \leq \alpha_1 \\ 2 & \text { if } \alpha_1<z \leq \alpha_2 \\ \vdots & \\ k & \text { if } \alpha_{k-1}<z \leq \alpha_k \\ \vdots & \\ K & \text { if } z>\alpha_{K-1}\end{cases}
+y = \begin{cases}1 & \text { if } z \leq \alpha_1 \\ 2 & \text { if } \alpha_1 < z \leq \alpha_2 \\ \vdots & \\ k & \text { if } \alpha_{k-1} < z \leq \alpha_k \\ \vdots & \\ K & \text { if } z > \alpha_{K-1} \end{cases}
 $$
 
 Given the latent structure, the probability of observing category $k$ is the probability that $z$ falls between two consecutive thresholds, $\alpha_{k-1}$ and $\alpha_k$. Formally, this is expressed as:
 
 $$
-P\left(y_i=k \mid X_i, \beta, b, \alpha\right)=P\left(\alpha_{k-1}<z \leq \alpha_k\right)=\Phi\left(\alpha_k-X_i^{\top} \beta-b\right)-\Phi\left(\alpha_{k-1}-X_i^{\top} \beta-b\right)
+P\left(y_i=k \mid X_i, \beta, b, \alpha\right)=P\left(\alpha_{k-1} < z \leq \alpha_k\right)=\Phi\left(\alpha_k-X_i^{\top} \beta-b\right)-\Phi\left(\alpha_{k-1}-X_i^{\top} \beta-b\right)
 $$
 
 

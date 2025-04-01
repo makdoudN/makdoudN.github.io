@@ -1,8 +1,8 @@
 ---
 title: "LLM for Conventional Commit Messages — WIP"
 date: "2024-11-15"
-summary: "Using LLMs to generate conventional commit messages"
-description: "An exploration of how LLMs can be used to generate conventional commit messages"
+summary: " "
+description: " "
 toc: false
 readTime: true
 autonumber: false

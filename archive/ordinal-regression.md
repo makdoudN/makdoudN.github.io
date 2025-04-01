@@ -1,8 +1,8 @@
 ---
-title: "Bayesian Ordinal Regression"
+title: "Ordinal Regression"
 date: "2024-10-01"
-summary: "A gentle introduction to Bayesian Ordinal Regression"
-description: "A gentle introduction to Bayesian Ordinal Regression"
+summary: ""
+description: " "
 toc: false
 readTime: true
 autonumber: false
@@ -11,6 +11,8 @@ tags: ["Machine Learning", "Bayesian Inference"]
 showTags: false
 hideBackToTop: false
 ---
+
+
 
 ### **What is Ordinal Regression.**
 

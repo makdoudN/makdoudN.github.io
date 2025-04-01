@@ -11,7 +11,7 @@ tags: ["Machine Learning", "Bayesian Inference", "Skill Rating Models"]
 showTags: false
 hideBackToTop: false
 ---
-**
+
 How to rate players in a competitive game by leveraging data ?
 
 Skill ratings in competitive games and sports serve several key purposes.

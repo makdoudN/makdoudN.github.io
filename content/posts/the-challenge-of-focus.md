@@ -1,8 +1,8 @@
 ---
 title: "Turning Discomfort into a Catalyst for Progress"
 date: "2024-10-01"
-summary: "Self-discomfort, often perceived negatively, can be harnessed as a constructive motivational resource to drive progress."
-description: "Self-discomfort, often perceived negatively, can be harnessed as a constructive motivational resource to drive progress."
+summary: " "
+description: " "
 toc: false
 readTime: false
 autonumber: false

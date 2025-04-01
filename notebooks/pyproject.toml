@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "einops>=0.8.1",
     "einx>=0.3.0",
+    "fastparquet>=2024.11.0",
     "ipywidgets>=8.1.5",
     "jupyterlab>=4.3.6",
     "lightgbm>=4.6.0",

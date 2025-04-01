@@ -1,8 +1,8 @@
 ---
 title: "TIL — Full Outer Join use case in ML"
 date: "2024-10-25"
-summary: "A simple solution to merge two tables in sql without losing information"
-description: "A simple solution to merge two tables in sql without losing information"
+summary: " "
+description: " "
 toc: false
 readTime: false
 autonumber: false

@@ -12,7 +12,7 @@ showTags: false
 hideBackToTop: false
 ---
 
-
+****
 When working with ordinal regression models, a critical question often emerges: how do we properly evaluate their performance? Unlike classification or regression tasks, ordinal regression presents unique evaluation challenges that are frequently overlooked in practice.
 
 Ordinal regression occupies a middle ground between classification and regression. 
@@ -33,7 +33,7 @@ Despite these challenges, proper evaluation of ordinal regression models is cruc
 
 So how should we approach this evaluation challenge? What metrics properly account for the ordinal structure while providing meaningful performance insights? The standard toolkit of classification and regression metrics falls short, requiring us to consider specialized approaches that respect the unique characteristics of ordinal data.
 
-I will talk from first principle about **Quadratic Weighted Kappa Score** (or QWK) which appears to be a simple yet effective to rate ordinal classifications. 
+I will talk from first principle about **Quadratic Weighted Kappa Score** (or QWK) which appears to be a simple yet effective metric to rate ordinal classifications. 
 
 
 ## A Detour by Cohen's Kappa Score measures
@@ -45,23 +45,20 @@ Let's say we have:
 - Two raters (or classifiers) assigning each item to one of $k$ possible categories.
 
 and let's define:
-- $O=$ observed agreement = proportion of cases where the two raters agree.
-- $E=$ expected agreement $=$ proportion of agreement that would be expected by random chance.
+- $O=$ observed agreement $=$ proportion of cases where the two raters agree.
+- $E=$ expected agreement by chance $=$ proportion of agreement that would be expected by random chance.
 
 We would like to quantify by how much better the agreement is compared to random chance. 
 
-First, we will need the **observed agreement**. Simply, this is the proportion of cases where the two raters agree:
+First, we will need to quantify the **observed agreement**. 
+Simply, this is the proportion of cases where the two raters agree:
 
 $$
 O=\frac{\text { Number of agreements }}{n}
 $$
 
-where:
-- $n=$ total number of items.
-- Number of agreements = number of items where both raters assign the same category.
-
 Secondly, we will need **Expected Agreement by Chance**.
-Before displaying the formula, it is useful to re-derive it from probability theory. 
+I was a bit bugged when I saw the formula so it is useful to re-derive it from first principle. 
 
 Let's formalize a bit this problem with introduction of the following objects:
 - $\mathcal{C}=\{1,2, \ldots, k\}$ be the set of categories.
@@ -69,6 +66,7 @@ Let's formalize a bit this problem with introduction of the following objects:
 - Rater B assigns category $i$ with probability $p_i^B$.
 
 We model the decisions of Rater A and Rater B as two independent random variables:
+
 $$X \sim \operatorname{Categorical}\left(p_1^A, \ldots, p_k^A\right) \quad \text{and} \quad Y \sim \operatorname{Categorical}\left(p_1^B, \ldots, p_k^B\right)$$
 
 We define the event of agreement as $\{X=Y\}$, i.e., both raters assign the same category.
@@ -124,9 +122,9 @@ The confusion matrix of observed agreement is the following:
 
 |  |  B: $\mathbf{1}$  | B: 2 | B: 3 |
 | :--- | :--- | :--- | :--- |
-| A: $\mathbf{1}$ |   1 | 0 | 2 |
-| A: $\mathbf{2}$ |   3 | 1 | 1 |
-| A: $\mathbf{3}$ |   1 | 1 | 0 |
+| **A:** $\mathbf{1}$ |   1 | 0 | 2 |
+| **A:** $\mathbf{2}$ |   3 | 1 | 1 |
+| **A:** $\mathbf{3}$ |   1 | 1 | 0 |
 
 We can define a **observed proportions** matrix $O=\left[o_{i j}\right]$
 
@@ -179,13 +177,13 @@ $$
 We are ready to integrate the weight to each observed agreement and random agreement
 
 $$
-O = \text{Weighted observed Agreement} = 1 - \text { Weighted observed disagreement }=1 - \sum_{i, j} w_{i j} \cdot o_{i j}
+O = \text{Weighted observed Agreement} =1 - \sum_{i, j} w_{i j} \cdot o_{i j}
 $$
 
 and 
 
 $$
-E = \text{Weighted Random Agreement}  = 1 - \text { Weighted expected disagreement }=1 - \sum_{i, j} w_{i j} \cdot e_{i j}
+E = \text{Weighted Random Agreement}  =1 - \sum_{i, j} w_{i j} \cdot e_{i j}
 $$
 
 
@@ -193,3 +191,32 @@ We arrive to the same formula with more penalization on large disagreement.
 $$
 \boxed{\kappa=\frac{O-E}{1-E}}
 $$
+
+---
+
+## Appendix
+
+**How to compute the observed agreements $O$ in practice ?**
+
+The observed agreements $O$ is computed as the *empirical* joint distribution of the ratings (ie, how often Rater A and Rater B actually agree on each label pair in practice)
+
+$$
+\begin{aligned}
+&O_{i j}=\frac{1}{n} \sum_{t=1}^n \mathbb{I}\left[x_t=i \text{ and } y_t=j\right]\\
+\end{aligned}
+$$
+
+So $O$ captures the actual frequency of label pairings.
+
+**How to compute the Expected agreements by chance $E$ in practice ?**
+
+This is what the agreement would look like by chance, assuming independence between the raters:
+
+$$
+E_{i j}=p_i^A \cdot p_j^B \quad \text { with } \quad p_i^A=\mathbb{P}[x=i], \quad p_j^B=\mathbb{P}[y=j]
+$$
+
+
+It uses the marginal distributions only, ignoring any correlation between Rater A and B with:
+
+$$p_i^A=\frac{1}{n} \sum_{t=1}^n \mathbb{I}\left[x_t=i\right], \quad p_j^B=\frac{1}{n} \sum_{t=1}^n \mathbb{I}\left[y_t=j\right]$$

@@ -215,3 +215,9 @@ The main problem with this approach are :
 -  $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 1}}} $ Validation of the output is not straightforward.
 -  $ \textcolor{red}{\raisebox{.5pt}{\textcircled{\scriptsize 2}}} $ The git-diff is not always the best source of information to generate a good commit message. Why ? Because it can be massive (example, with notebooks) and it is not always easy to understand what has been changed.
 
+
+
+message. Why ? Because it can be massive (example, with notebooks) and it is not always easy to understand what has been changed.
+This is {{< highlight >}}highlighted text{{< /highlight >}} in yellow.
+message. Why ? Because it can be massive (example, with notebooks) and it is not always easy to understand what has been changed.
+

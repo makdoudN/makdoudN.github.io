@@ -1,0 +1,10 @@
+{{ if eq .Kind "markdown" }}
+{{ $content := .Inner }}
+{{ $content = replace $content "==" "<mark>" }}
+{{ $content = replace $content "==" "</mark>" }}
+{{ $content | safeHTML }}
+{{ else if eq .Kind "highlight" }}
+<mark>{{ .Inner }}</mark>
+{{ else }}
+{{ .Inner }}
+{{ end }} 

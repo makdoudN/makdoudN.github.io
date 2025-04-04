@@ -204,7 +204,7 @@ $$
 \begin{aligned}
 &O_{i j}=\frac{1}{n} \sum_{t=1}^n \mathbb{I}\left[x_t=i \text{ and } y_t=j\right]\\
 \end{aligned}
-$$
+$$****
 
 So $O$ captures the actual frequency of label pairings.
 

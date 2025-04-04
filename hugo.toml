@@ -1,4 +1,3 @@
-
 baseURL = "https://makdoudN.github.io/"
 languageCode = 'en-us'
 title = 'Blog'
@@ -21,7 +20,7 @@ theme = 'auto'
 # Intro on main page, content is markdown
 homeIntroTitle = 'Welcome ! '
 homeIntroContent = """
-I’m a French Data Scientist with a passion for tackling tasks—simple or complex—through data-driven approaches. 
+I'm a French Data Scientist with a passion for tackling tasks—simple or complex—through data-driven approaches. 
 My interests span Machine Learning, Bayesian Modeling, Causal Inference, and a lot related fields. 
 Beyond the technical aspects, I enjoy exploring problem spaces through the lens of data and derive simple yet actionnable answers.
 """
@@ -70,14 +69,19 @@ guessSyntax = false
 noClasses = false
 
 [markup.goldmark]
+  [markup.goldmark.renderer]
+    unsafe = true
   [markup.goldmark.extensions]
-    # Enable passthrough for math equations
-    [markup.goldmark.extensions.passthrough]
-      enable = true
-      [markup.goldmark.extensions.passthrough.delimiters]
-        block = [['\[', '\]'], ['$$', '$$']]  # For block/display math
-        inline = [['\(', '\)'], ['$', '$']]   # For inline math
-    
+    typographer = true
+    linkify = true
+  [markup.goldmark.parser]
+    attribute = true
+    autoHeadingID = true
+    autoHeadingIDType = "github"
+  [markup.goldmark.parser.block]
+    enable = true
+  [markup.goldmark.parser.inline]
+    enable = true
 
 # Giscus comments
 [params.giscus]

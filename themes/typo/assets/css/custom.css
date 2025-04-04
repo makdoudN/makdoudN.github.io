@@ -1,8 +1,32 @@
 /* Place custom css here */
 
-/* Option 2: Modern highlight with subtle background */
+/* Yellow highlighting for ==TEXT== syntax */
 mark {
-    background-color: rgba(255, 242, 97, 0.6);
-    padding: 0 4px;
-    border-radius: 2px;
+    --highlight-bg: rgba(255, 220, 0, 0.4);
+    --highlight-border: rgba(255, 220, 0, 0.15);
+    background-color: var(--highlight-bg);
+    padding: 0.1em 0.3em;
+    border-radius: 4px;
+    color: inherit;
+    display: inline;
+    margin: 0;
+    line-height: inherit;
+    box-shadow: 0 0 0 1px var(--highlight-border);
+    transition: background-color 0.2s ease;
 }
+
+/* Dark mode styles */
+.dark mark {
+    --highlight-bg: rgba(255, 220, 0, 0.3);
+    --highlight-border: rgba(255, 220, 0, 0.2);
+}
+
+mark:hover {
+    --highlight-bg-hover: rgba(255, 220, 0, 0.5);
+    background-color: var(--highlight-bg-hover);
+}
+
+.dark mark:hover {
+    --highlight-bg-hover: rgba(255, 220, 0, 0.4);
+}
+

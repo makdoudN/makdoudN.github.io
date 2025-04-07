@@ -12,7 +12,7 @@ googleAnalytics = "G-xxxxxxxxx"
 [params]
 # Meta description
 description = "A Tech Blog"
-# Enable MathJax support
+# Enable math support globally
 math = true
 # Appearance settings
 theme = 'auto'
@@ -42,7 +42,6 @@ breadcrumbs = true
 name = "linkedin"
 url = "https://www.linkedin.com/in/makdoud-nizam/"
 
-
 [[params.social]]
 name = "github"
 url = "https://github.com/makdoudN"
@@ -60,28 +59,37 @@ url = "/posts"
 name = "about"
 url = "/about"
 
-
-# Syntax highligth on code blocks
+# Markup configuration
 [markup]
-[markup.highlight]
-codeFences = false
-guessSyntax = false
-noClasses = false
-
 [markup.goldmark]
-  [markup.goldmark.renderer]
-    unsafe = true
-  [markup.goldmark.extensions]
-    typographer = true
-    linkify = true
-  [markup.goldmark.parser]
-    attribute = true
-    autoHeadingID = true
-    autoHeadingIDType = "github"
-  [markup.goldmark.parser.block]
-    enable = true
-  [markup.goldmark.parser.inline]
-    enable = true
+[markup.goldmark.renderer]
+unsafe = true
+
+[markup.goldmark.parser]
+attribute = true
+autoHeadingID = true
+autoHeadingIDType = "github"
+
+[markup.goldmark.parser.block]
+enable = true
+
+[markup.goldmark.parser.inline]
+enable = true
+
+[markup.goldmark.extensions]
+typographer = false
+linkify = false
+
+[markup.goldmark.extensions.passthrough]
+enable = true
+[markup.goldmark.extensions.passthrough.delimiters]
+block = [['\\[', '\\]'], ['$$', '$$']]
+inline = [['\\(', '\\)']]
+
+[markup.highlight]
+codeFences = true
+guessSyntax = true
+noClasses = false
 
 # Giscus comments
 [params.giscus]

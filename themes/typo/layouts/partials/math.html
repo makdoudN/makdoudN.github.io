@@ -1,19 +1,60 @@
-<link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css">
-<script defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script>
-
-<script defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"
-  onload="renderMathInElement(document.body);"></script>
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" integrity="sha384-YiVwk+MBV52+yIvvplLwDxm3iGDI7dYb731lqsN4AzuEA8UZakU3R9BBY0V6yU+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js" integrity="sha384-dBKSiO3z/1CepEpqYt6ZWw6l92Qq0LZFsByADXSGp7RuBWxqTo6y5TzgOxvF98c" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js" integrity="sha384-uKCDxcNJWKX7F0zqtx+GU2lKAZ5UHiJcuOBX7OyU12kofGJtVxvKaJhCGHUHgJpR" crossorigin="anonymous"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    renderMathInElement(document.body, {
-      delimiters: [
-        { left: "$$", right: "$$", display: true },
-        { left: "$", right: "$", display: false }
-      ]
-    });
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\[", right: "\\]", display: true},
+      {left: "\\(", right: "\\)", display: false}
+    ],
+    throwOnError: false,
+    errorColor: "#cc0000",
+    strict: "ignore",
+    trust: true,
+    macros: {
+      "\\RR": "\\mathbb{R}",
+      "\\CC": "\\mathbb{C}",
+      "\\NN": "\\mathbb{N}",
+      "\\ZZ": "\\mathbb{Z}",
+      "\\QQ": "\\mathbb{Q}",
+      "\\bmatrix": "\\begin{bmatrix}#1\\end{bmatrix}",
+      "\\pmatrix": "\\begin{pmatrix}#1\\end{pmatrix}",
+      "\\vmatrix": "\\begin{vmatrix}#1\\end{vmatrix}",
+      "\\Vmatrix": "\\begin{Vmatrix}#1\\end{Vmatrix}",
+      "\\array": "\\begin{array}#1\\end{array}",
+      "\\cases": "\\begin{cases}#1\\end{cases}",
+      "\\aligned": "\\begin{aligned}#1\\end{aligned}",
+      "\\gathered": "\\begin{gathered}#1\\end{gathered}"
+    }
   });
+});
 </script>
+
+<style>
+.katex {
+  font-size: 1.1em;
+}
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5em 0;
+  margin: 0.5em 0;
+}
+.katex .array {
+  text-align: center;
+  margin: 0.5em auto;
+}
+.katex .array > span {
+  padding: 0.2em;
+}
+</style>
+
+<!-- KaTeX validation element -->
+<div id="katex-validation" style="display: none;">
+  \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}
+</div>

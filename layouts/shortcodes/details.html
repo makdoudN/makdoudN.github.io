@@ -75,6 +75,22 @@
     transition: padding 0.3s;
   }
 
+  /* KaTeX specific styles */
+  .toggle-content .katex {
+    font-size: 1.1em;
+  }
+
+  .toggle-content .katex-display {
+    margin: 1em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .toggle-content .katex-display > .katex {
+    display: inline-block;
+    text-align: initial;
+  }
+
   .toggle-section[open] .toggle-content {
     padding-top: 1.25rem;
     padding-bottom: 1.25rem;

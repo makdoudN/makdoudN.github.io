@@ -30,3 +30,97 @@ mark:hover {
     --highlight-bg-hover: rgba(255, 220, 0, 0.4);
 }
 
+/* KaTeX styles */
+.katex-display {
+    margin: 1em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: center;
+}
+
+.katex-display > .katex {
+    display: inline-block;
+    text-align: initial;
+}
+
+/* Matrix and array styles */
+.katex .array,
+.katex .matrix {
+    display: inline-table;
+    vertical-align: middle;
+    text-align: center;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0.5em;
+}
+
+.katex .array > span,
+.katex .matrix > span {
+    display: table-row;
+}
+
+.katex .array .col-align-c > span,
+.katex .matrix .col-align-c > span {
+    display: table-cell;
+    padding: 0.5em;
+    text-align: center;
+}
+
+.katex .array .col-align-l > span,
+.katex .matrix .col-align-l > span {
+    display: table-cell;
+    padding: 0.5em;
+    text-align: left;
+}
+
+.katex .array .col-align-r > span,
+.katex .matrix .col-align-r > span {
+    display: table-cell;
+    padding: 0.5em;
+    text-align: right;
+}
+
+/* Matrix delimiters */
+.katex .matrix .vlist-t {
+    display: inline-table;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.katex .matrix .vlist-r {
+    display: table-row;
+}
+
+.katex .matrix .vlist {
+    display: table-cell;
+    vertical-align: bottom;
+    position: relative;
+}
+
+/* Matrix brackets */
+.katex .matrix .vlist-s {
+    display: table-cell;
+    width: 0.2em;
+}
+
+.katex .matrix .vlist-s:first-child {
+    padding-right: 0.2em;
+}
+
+.katex .matrix .vlist-s:last-child {
+    padding-left: 0.2em;
+}
+
+/* Dark mode KaTeX styles */
+.dark .katex {
+    color: var(--content-primary);
+}
+
+.dark .katex .array .hline,
+.dark .katex .array .vline,
+.dark .katex .matrix .hline,
+.dark .katex .matrix .vline {
+    border-color: var(--content-primary);
+}
+

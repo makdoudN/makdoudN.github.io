@@ -1,0 +1,5 @@
+{{ if .Display }}
+<div class="math math-display">{{ .Inner }}</div>
+{{ else }}
+<span class="math math-inline">{{ .Inner }}</span>
+{{ end }} 

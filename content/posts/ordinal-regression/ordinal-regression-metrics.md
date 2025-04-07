@@ -163,15 +163,15 @@ $$
 These weights penalize larger disagreements (e.g., 1 vs. 3) more heavily than small ones (e.g., 1 vs. 2). In our example:
 
 $$
-W=\left[\begin{array}{ccc}
+W=\begin{bmatrix}
 0 & \left(\frac{1-2}{2}\right)^2 & \left(\frac{1-3}{2}\right)^2 \\
 \left(\frac{2-1}{2}\right)^2 & 0 & \left(\frac{2-3}{2}\right)^2 \\
 \left(\frac{3-1}{2}\right)^2 & \left(\frac{3-2}{2}\right)^2 & 0
-\end{array}\right]=\left[\begin{array}{ccc}
+\end{bmatrix}=\begin{bmatrix}
 0 & 0.25 & 1 \\
 0.25 & 0 & 0.25 \\
 1 & 0.25 & 0
-\end{array}\right]
+\end{bmatrix}
 $$
 
 We are ready to integrate the weight to each observed agreement and random agreement
@@ -204,7 +204,7 @@ $$
 \begin{aligned}
 &O_{i j}=\frac{1}{n} \sum_{t=1}^n \mathbb{I}\left[x_t=i \text{ and } y_t=j\right]\\
 \end{aligned}
-$$****
+$$
 
 So $O$ captures the actual frequency of label pairings.
 

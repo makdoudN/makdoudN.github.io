@@ -60,7 +60,7 @@ p=f(\eta)=\frac{1}{1+e^{-\eta}}
 $$
 Above, we use logistic function as inverse link function ensuring that $p \in(0,1)$
 
-Given data $\left\{\left(X_i, y_i\right)\right\}_{i=1}^M$, the likelihood function is:
+Given data $\{(X_i, y_i)\}_{i=1}^M$, the likelihood function is:
 
 $$
 L(\omega, b)=\prod_{i=1}^M \operatorname{Bernoulli}\left(y_i \mid p_i\right)=\prod_{i=1}^M p_i^{y_i}\left(1-p_i\right)^{1-y_i}

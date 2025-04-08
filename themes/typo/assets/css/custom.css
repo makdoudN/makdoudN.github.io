@@ -30,6 +30,49 @@ mark:hover {
     --highlight-bg-hover: rgba(255, 220, 0, 0.4);
 }
 
+/* Post list styles */
+.post-line {
+    margin: 1em 0;
+}
+
+.post-link {
+    display: flex;
+    align-items: baseline;
+    text-decoration: none;
+    color: var(--content-primary);
+    width: 100%;
+}
+
+.post-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+}
+
+.post-dots {
+    flex: 1;
+    margin: 0 0.5em;
+    text-align: center;
+    overflow: hidden;
+    height: 1em;
+    line-height: 1;
+    color: var(--content-secondary);
+    opacity: 0.6;
+}
+
+.post-dots::before {
+    content: ".................................................................................................................................................................................................";
+    letter-spacing: 2px;
+}
+
+.post-date {
+    white-space: nowrap;
+    color: var(--content-secondary);
+    text-align: left;
+    min-width: 6.5em;
+}
+
 /* KaTeX styles */
 .katex-display {
     margin: 1em 0;

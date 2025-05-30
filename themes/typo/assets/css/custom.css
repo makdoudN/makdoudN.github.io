@@ -167,3 +167,67 @@ mark:hover {
     border-color: var(--content-primary);
 }
 
+/* == Text Box Component == */
+
+/* Define variables for simpler boxed style */
+:root {
+  --box-border-color: #000000;     /* Default border color (black) */
+  --box-text-color: inherit;       /* Inherit text color */
+  --box-padding: 10px 15px;        /* Inner spacing */
+  --box-margin: 20px 0;           /* Outer spacing */
+  --box-border-radius: 3px;        /* Slightly rounded corners */
+  --box-border-width: 1px;         /* Default border thickness (thinner) */
+  --box-border-style: solid;       /* Default border style */
+}
+
+/* Optional: Basic dark mode adaptation (Adjust border for dark mode) */
+/*
+body.dark {
+  --box-border-color: #555555; /* Darker gray border */
+/*  --box-text-color: inherit; /* Usually fine to inherit */
+/*}
+*/
+
+/* Base style for the text box (LaTeX-like box) */
+.text-box {
+  border-width: var(--box-border-width);
+  border-style: var(--box-border-style);
+  border-color: var(--box-border-color);
+  padding: var(--box-padding);
+  margin: var(--box-margin);
+  border-radius: var(--box-border-radius);
+  color: var(--box-text-color);
+  /* Removed background-color, border-left, box-shadow */
+}
+
+/* Improve spacing for paragraphs within the box */
+.text-box p {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+.text-box p:last-child {
+  margin-bottom: 0;
+}
+
+/* Type modifiers change the border color */
+.text-box.info {
+  --box-border-color: #0dcaf0; /* Cyan */
+}
+.text-box.success {
+  --box-border-color: #198754; /* Green */
+}
+.text-box.warning {
+  --box-border-color: #ffc107; /* Yellow */
+}
+.text-box.danger {
+  --box-border-color: #dc3545; /* Red */
+}
+
+/* Style modifiers change the border style */
+.text-box.dashed {
+  border-style: dashed;
+}
+.text-box.dotted {
+  border-style: dotted;
+}
+

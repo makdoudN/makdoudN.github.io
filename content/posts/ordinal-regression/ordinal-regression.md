@@ -15,19 +15,13 @@ hideBackToTop: false
 ### **What is Ordinal Regression.**
 
 Ordinal regression is a type of regression analysis used when the dependent variable is ordinal, meaning the categories have a natural order, but the intervals between them are not necessarily equal. 
-The ordering may be subject to heterogeneity, meaning that different factors or groups may influence how the distances between categories vary, and this can be modeled explicitly using ordinal regression techniques.
 The goal is to predict the ordinal outcomes while considering both the order and the unequal spacing between categories. 
-
-For example, the temperature feeling is somewhat subjective and can be categorized as "cold", "cool", "neutral", "warm", "hot". 
-Such a categorical variable is ordinal, we know that "cold" is colder than "cool", "cool" is colder than "neutral", etc.
-Still, for one person, the difference between "cool" and "neutral" might not be the same as between "warm" and "hot".
-Different people might have different perceptions of what is cold or hot.
 
 **Why it is different from Classical Regression.** Classification treats all categories as independent and does not consider the natural order in ordinal data. For example, "poor" and "excellent" would be treated as equally different from "fair," which ignores the ordinal structure.
 
 ### **Why is Ordinal Regression Important?**
 
-**Preserving Ordinal Structure**. It respects the order of categories, unlike classification, which treats categories as unrelated. This leads to **more accurate models** for ordinal data by avoiding **incorrect assumptions about the relationships between outcomes**.
+**Preserving Ordinal Structure**. It respects the order of categories, unlike classification, which treats categories as unrelated. This leads to more accurate models for ordinal data by avoiding incorrect assumptions about the relationships between outcomes.
 
 **Capturing Heterogeneity**. Ordinal regression allows for modeling heterogeneity between groups or categories. For instance, different population segments may perceive the distance between "good" and "excellent" differently, and this variability can be accounted for in the model.
 
@@ -37,8 +31,10 @@ How to derive from first principles a Bayesian Ordinal Regression?
 
 ---
 ### A detour with Binary Classification
-Let's start with observations $y \in\{0,1\}$. 
-The simplest probabilistic model for binary data is the Bernoulli distribution:
+
+Let's start with the simplest close model, the binary classification.
+
+We start with observations $y \in\{0,1\}$ and we assume those observations are Bernoulli distributed:
 
 $$
 y \sim \operatorname{Bernoulli}(p), \quad \text { with } \quad \mathbb{E}[y]=p
@@ -46,26 +42,25 @@ $$
 
 where $p$ is the probability of observing $y = 1$
 
-We will assume that this probability $p$ is linked to a set of feature $X \in \mathbb{R}^N$.
+Our objective will be the infer the link between $p$ and the features $X \in \mathbb{R}^N$. associated with each observations. 
 We also introduce a set of parameters $\omega \in \mathbb{R}^N$ and an intercept $b \in \mathbb{R}$ and 
 posit the linear relationship. 
 $$
 \eta=X^{\top} \omega+b
 $$
 
-However, directly equating this linear predictor $\eta$ to the probability $p$ isn't possible since $p \in[0,1]$ and $\eta \in(-\infty, \infty)$.
-We complete the link between $\eta$ and $p$ by introduce a (inverse) link function (which is a smooth, monotonic transformation) mapping $\eta$ to p: 
+However, directly equating $\eta$ to the probability $p$ isn't possible since $p \in[0,1]$ and $\eta \in(-\infty, \infty)$, they do not live in the same space.
+We complete the link between $\eta$ and $p$ by introduce a (inverse) link function (which is a smooth, monotonic transformation) mapping from $\eta$ to p: 
 $$
 p=f(\eta)=\frac{1}{1+e^{-\eta}}
 $$
 Above, we use logistic function as inverse link function ensuring that $p \in(0,1)$
 
-Given data $\{(X_i, y_i)\}_{i=1}^M$, the likelihood function is:
+Given data $\bigg\{\big(X_i, y_i\big)\bigg\}_{i=1}^M$, and the assumption that tuples are independent, the likelihood function factorizes as:
 
 $$
 L(\omega, b)=\prod_{i=1}^M \operatorname{Bernoulli}\left(y_i \mid p_i\right)=\prod_{i=1}^M p_i^{y_i}\left(1-p_i\right)^{1-y_i}
 $$
-
 
 To simplify calculations, we maximize the log-likelihood instead:
 

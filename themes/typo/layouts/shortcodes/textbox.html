@@ -1,0 +1,25 @@
+{{/* 
+  Shortcode: textbox
+  Usage: {{< textbox type="info" border="dashed" >}}Content here{{< /textbox >}}
+         {{< textbox >}}Default box content{{< /textbox >}}
+  Parameters:
+    type (optional): info, success, warning, danger. Changes border color.
+    border (optional): dashed, dotted. Changes border style. Defaults to solid.
+*/}}
+{{ $type := .Get "type" }}
+{{ $border_style := .Get "border" }}
+{{ $class := "text-box" }}
+
+{{/* Add type class if provided */}}
+{{ if $type }}
+  {{ $class = printf "%s %s" $class $type }}
+{{ end }}
+
+{{/* Add border style class if provided and valid */}}
+{{ if and $border_style (in (slice "dashed" "dotted") $border_style) }}
+  {{ $class = printf "%s %s" $class $border_style }}
+{{ end }}
+
+<div class="{{ $class }}">
+  {{ .Inner | markdownify }}
+</div> 

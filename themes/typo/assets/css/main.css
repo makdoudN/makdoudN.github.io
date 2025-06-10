@@ -443,3 +443,25 @@ p {
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
 }
+
+/* Mobile responsive styles */
+@media screen and (max-width: 768px) {
+  .single-readtime {
+    display: none !important;
+  }
+  
+  .post-date {
+    display: none !important;
+  }
+  
+  .post-dots {
+    display: none !important;
+  }
+  
+  .post-title {
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: initial !important;
+  }
+}

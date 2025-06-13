@@ -1,30 +1,11 @@
-@font-face {
-    font-family: 'Literata';
-    src: url('/fonts/Literata/Literata-Light.woff2') format('woff2');
-    font-weight: light;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Literata';
-    src: url('/fonts/Literata/Literata-LightItalic.woff2') format('woff2');
-    font-weight: light;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: 'Literata';
-    src: url('/fonts/Literata/Literata-SemiBold.woff2') format('woff2');
-    font-weight: bold;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Literata';
-    src: url('/fonts/Literata/Literata-SemiBoldItalic.woff2') format('woff2');
-    font-weight: bold;
-    font-style: italic;
-}
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka-etoile@5.0.24/300.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka-etoile@5.0.24/400.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka-etoile@5.0.24/500.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka-etoile@5.0.24/600.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka-etoile@5.0.24/700.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka-etoile@5.0.24/300-italic.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka-etoile@5.0.24/400-italic.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka-etoile@5.0.24/700-italic.css');
 
 @font-face {
     font-family: 'Monaspace';

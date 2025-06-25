@@ -1,6 +1,6 @@
 baseURL = "https://makdoudN.github.io/"
 languageCode = 'en-us'
-title = 'Blog'
+title = 'My Data Diary'
 theme = 'typo'
 
 [taxonomies]
@@ -12,8 +12,10 @@ googleAnalytics = "G-xxxxxxxxx"
 [params]
 # Meta description
 description = "A Tech Blog"
+
 # Enable math support globally
 math = true
+
 # Appearance settings
 theme = 'auto'
 
@@ -50,10 +52,6 @@ url = "https://github.com/makdoudN"
 [[params.menu]]
 name = "home"
 url = "/"
-
-[[params.menu]]
-name = "posts"
-url = "/posts"
 
 [[params.menu]]
 name = "about"

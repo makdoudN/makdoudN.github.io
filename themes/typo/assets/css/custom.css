@@ -53,23 +53,28 @@ mark:hover {
 .post-dots {
     flex: 1;
     margin: 0 0.5em;
-    text-align: center;
-    overflow: hidden;
     height: 1em;
     line-height: 1;
-    color: var(--content-secondary);
-    opacity: 0.6;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .post-dots::before {
-    content: ".................................................................................................................................................................................................";
-    letter-spacing: 2px;
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-image: radial-gradient(circle, var(--content-secondary) 0.8px, transparent 0.8px);
+    background-size: 6px 1px;
+    background-repeat: repeat-x;
+    background-position: center;
+    opacity: 0.9;
 }
 
 .post-date {
     white-space: nowrap;
     color: var(--content-secondary);
-    text-align: left;
+    text-align: right;
     min-width: 6.5em;
 }
 

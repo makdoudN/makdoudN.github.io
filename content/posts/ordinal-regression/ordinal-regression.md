@@ -12,14 +12,12 @@ showTags: false
 hideBackToTop: false
 ---
 
-### **What is Ordinal Regression.**
-
 Ordinal regression is a type of regression analysis used when the dependent variable is ordinal, meaning the categories have a natural order, but the intervals between them are not necessarily equal. 
 The goal is to predict the ordinal outcomes while considering both the order and the unequal spacing between categories. 
 
-**Why it is different from Classical Regression.** Classification treats all categories as independent and does not consider the natural order in ordinal data. For example, "poor" and "excellent" would be treated as equally different from "fair," which ignores the ordinal structure.
+*Why it is different from Classical Regression.* Classification treats all categories as independent and does not consider the natural order in ordinal data. For example, "poor" and "excellent" would be treated as equally different from "fair," which ignores the ordinal structure.
 
-### **Why is Ordinal Regression Important?**
+Why is Ordinal Regression Important?
 
 **Preserving Ordinal Structure**. It respects the order of categories, unlike classification, which treats categories as unrelated. This leads to more accurate models for ordinal data by avoiding incorrect assumptions about the relationships between outcomes.
 
@@ -56,7 +54,7 @@ p=f(\eta)=\frac{1}{1+e^{-\eta}}
 $$
 Above, we use logistic function as inverse link function ensuring that $p \in(0,1)$
 
-Given data $\bigg\{\big(X_i, y_i\big)\bigg\}_{i=1}^M$, and the assumption that tuples are independent, the likelihood function factorizes as:
+Given data $\{\big(X_i, y_i\big)\}_{i=1}^M$, and the assumption that tuples are independent, the likelihood function factorizes as:
 
 $$
 L(\omega, b)=\prod_{i=1}^M \operatorname{Bernoulli}\left(y_i \mid p_i\right)=\prod_{i=1}^M p_i^{y_i}\left(1-p_i\right)^{1-y_i}

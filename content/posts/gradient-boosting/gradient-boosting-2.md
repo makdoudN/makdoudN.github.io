@@ -250,6 +250,14 @@ This is why fitting trees to gradients works, and why the method is called "grad
 
 **Gradient boosting is gradient descent in function space, implemented via weak learners that generalize the functional gradient from training points to the entire input space.**
 
+### The Interpolation Problem Is Deeper Than It Appears
+
+The framing "we only get gradient information at training points" is true, but what weak learners actually do is impose an **inductive bias** (tree structure, smoothness, etc.) that defines how gradient information propagates to unseen points. This is where the choice of hypothesis class $\mathcal{H}$ becomes crucial.
+
+When we fit a tree to the negative gradient, we're not just interpolating values—we're choosing *how* to interpolate. A decision tree assumes the gradient should be constant within axis-aligned regions. A linear model assumes it should vary linearly. A neural network assumes it should follow a smooth, non-linear manifold. Each choice embeds different assumptions about the underlying structure of the problem.
+
+This is why gradient boosting with trees works so well on tabular data but may struggle on images (where convolutional structures are more natural), while gradient boosting with neural networks might excel on perceptual tasks. The "interpolation" is not passive—it's an active modeling choice that determines which patterns the algorithm can learn.
+
 ## Formalizing the Functional Gradient Descent Algorithm
 
 Now that we understand why weak learners are necessary, let's formalize the gradient boosting algorithm from the functional gradient perspective.

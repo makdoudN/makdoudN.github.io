@@ -97,9 +97,125 @@ $$
 
 This is the **functional gradient**—the gradient of a functional with respect to a function.
 
+## Functions as Infinite-Dimensional Vectors
+
+To make this more concrete, let's think about what it really means to differentiate with respect to a function. The key insight is that **a function is just a vector in an infinite-dimensional space**.
+
+### From Finite to Infinite Dimensions
+
+In finite dimensions, we're used to vectors like:
+
+$$
+\theta = \begin{bmatrix} \theta_1 \\ \theta_2 \\ \vdots \\ \theta_p \end{bmatrix} \in \mathbb{R}^p
+$$
+
+Each component $\theta_j$ is a number. The gradient $\nabla_\theta L$ is also a vector in $\mathbb{R}^p$, where the $j$-th component tells us how the loss changes when we change $\theta_j$.
+
+Now think about a function $F: \mathcal{X} \to \mathbb{R}$. We can view this function as a "vector" where:
+- Instead of finitely many components indexed by $j \in \{1, \ldots, p\}$, we have infinitely many components indexed by all possible inputs $x \in \mathcal{X}$
+- Each "component" $F(x)$ is the function's output at point $x$
+- The function $F$ is like a vector with one dimension for every possible input $x$
+
+### Making It Concrete: The Discrete Approximation
+
+To build intuition, suppose our input space $\mathcal{X}$ consists of just $m$ discrete points $\{x_1, x_2, \ldots, x_m\}$ (this might be a discretization of a continuous space, or just all possible inputs in a discrete problem).
+
+Then a function $F: \mathcal{X} \to \mathbb{R}$ is completely specified by its values at these $m$ points:
+
+$$
+F \leftrightarrow \begin{bmatrix} F(x_1) \\ F(x_2) \\ \vdots \\ F(x_m) \end{bmatrix} \in \mathbb{R}^m
+$$
+
+This is just a vector in $\mathbb{R}^m$! The function and the vector are the same thing—we can convert between them freely.
+
+Now suppose we have a loss that depends on these function values. For concreteness, say we have training data at some subset of points, and the loss is:
+
+$$
+\mathcal{L}[F] = \sum_{i=1}^n L(y_i, F(x_i))
+$$
+
+where $\{x_1, \ldots, x_n\} \subseteq \{x_1, \ldots, x_m\}$ are our training points.
+
+**The gradient of this loss with respect to the function** is just the gradient with respect to the vector of function values:
+
+$$
+\nabla_F \mathcal{L} = \begin{bmatrix}
+\frac{\partial \mathcal{L}}{\partial F(x_1)} \\
+\frac{\partial \mathcal{L}}{\partial F(x_2)} \\
+\vdots \\
+\frac{\partial \mathcal{L}}{\partial F(x_m)}
+\end{bmatrix} \in \mathbb{R}^m
+$$
+
+Most of these components are zero! Specifically:
+- If $x_j$ is not a training point, then $\mathcal{L}$ doesn't depend on $F(x_j)$, so $\frac{\partial \mathcal{L}}{\partial F(x_j)} = 0$
+- If $x_j = x_i$ is a training point, then $\frac{\partial \mathcal{L}}{\partial F(x_i)} = \frac{\partial L(y_i, F(x_i))}{\partial F(x_i)} = g_i$
+
+So the functional gradient is:
+
+$$
+\nabla_F \mathcal{L} = \begin{bmatrix}
+g_1 \\
+0 \\
+g_2 \\
+0 \\
+\vdots \\
+g_n \\
+0
+\end{bmatrix}
+$$
+
+where the non-zero entries correspond to training points.
+
+### Gradient Descent in This View
+
+Standard gradient descent would update:
+
+$$
+F(x_j) \leftarrow F(x_j) - \alpha \frac{\partial \mathcal{L}}{\partial F(x_j)}
+$$
+
+for each point $x_j$. This means:
+- At training points: $F(x_i) \leftarrow F(x_i) - \alpha g_i$ (we move in the direction of steepest descent)
+- At non-training points: $F(x_j) \leftarrow F(x_j)$ (no change, because the loss doesn't depend on these values)
+
+**This is the problem!** We update the function at training points based on the gradient, but we don't know what to do at other points. If a new point $x_{\text{test}}$ arrives that wasn't in our training set, $F(x_{\text{test}})$ was never updated—it's still at its initialization.
+
+### Back to Infinite Dimensions
+
+In the continuous case where $\mathcal{X}$ is infinite (or just very large), this becomes even more stark. The function $F$ is a vector in an infinite-dimensional space. The gradient tells us how to change $F$ at the (finitely many) training points, but it says nothing about the infinitely many other points.
+
+This is why we need weak learners: **they provide a smooth interpolation of the gradient from the training points to the entire input space.**
+
+Instead of updating the function pointwise:
+
+$$
+F(x) \leftarrow F(x) - \alpha \nabla_F \mathcal{L}[F](x) \quad \text{(only defined at training points)}
+$$
+
+we fit a smooth function $f_t$ that approximates the negative gradient at training points and generalizes to all points:
+
+$$
+F(x) \leftarrow F(x) + \alpha f_t(x) \quad \text{(defined everywhere)}
+$$
+
+### Summary: Functions as Vectors
+
+The key insights from this view:
+
+1. **A function is a vector**: $F$ can be viewed as an infinite-dimensional vector with one component $F(x)$ for each input $x$
+
+2. **The functional gradient is the standard gradient**: When we compute $\frac{\partial \mathcal{L}}{\partial F(x_i)}$, we're just computing the partial derivative with respect to the $i$-th component of this infinite-dimensional vector
+
+3. **The training data sparsity problem**: The gradient is only non-zero at training points (a finite sparse subset of the infinite-dimensional space)
+
+4. **Weak learners solve interpolation**: They take the sparse gradient information at training points and interpolate it smoothly across the entire input space
+
+This function-as-vector view makes functional differentiation less mysterious: it's just regular differentiation, but in a very high-dimensional (or infinite-dimensional) space. The gradient tells us which direction to move in this space, and weak learners provide a smooth path in that direction.
+
 ## Why Part 1 Is Not (Quite) Gradient Descent
 
-Now we can see why Part 1's approach is not straightforward gradient descent, and why that matters.
+Armed with the function-as-vector perspective, we can now see precisely why Part 1's approach is not straightforward gradient descent, and why that matters.
 
 If we were doing gradient descent in function space, we would update the function by moving in the direction opposite to the functional gradient:
 

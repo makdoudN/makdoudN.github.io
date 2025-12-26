@@ -1,8 +1,8 @@
 ---
 title: "The Geometry of the Differential"
 date: "2025-12-26"
-summary: "A curriculum-based exploration of the differential, gradient, Jacobian, and Hessian from first principles, rooted in geometry and linear algebra"
-description: "Understanding differentiation through the lens of linear approximation and geometric intuition"
+summary: "Understanding differentiation through tangent spaces, the distinction between points and directions, and the geometric meaning of the gradient, Jacobian, and Hessian"
+description: "A geometric exploration of differentiation rooted in linear algebra and the fundamental distinction between points and directions"
 toc: false
 readTime: false
 autonumber: false
@@ -12,63 +12,107 @@ showTags: false
 hideBackToTop: false
 ---
 
-Differentiation is often taught as a collection of rules and formulas. But at its core, differentiation is about **linear approximation**—replacing complicated functions with simpler linear ones that capture local behavior. This perspective, rooted in geometry and linear algebra, provides the right mental model for understanding the differential, gradient, Jacobian, and Hessian.
+Differentiation is fundamentally about **linear approximation**. When we differentiate a function, we replace it locally with something simpler—a linear function that captures its essential behavior near a point. This perspective, rooted in geometry and linear algebra rather than limits and infinitesimals, reveals the true nature of the differential, gradient, Jacobian, and Hessian.
 
-This post builds these concepts from first principles, emphasizing geometric intuition and the linear algebra structure that unifies them.
+But to understand differentiation geometrically, we must first grasp a subtle yet profound distinction that underlies all of differential calculus: the difference between **points** and **directions**.
 
-## Part 1: The Differential as Linear Approximation
+## Points vs Directions: The Foundation of Tangent Spaces
 
-### What Problem Does Differentiation Solve?
+Consider the simplest case: a curve $\gamma: \mathbb{R} \to \mathbb{R}^2$ in the plane. At time $t = 0$, the curve passes through some point $\mathbf{p} = \gamma(0)$. This point is a **position** in space—a location where the curve happens to be.
 
-Suppose we have a function $f: \mathbb{R}^n \to \mathbb{R}^m$ that we want to understand near a point $\mathbf{a} \in \mathbb{R}^n$. The function might be complicated—nonlinear, multi-dimensional, hard to analyze globally.
+Now consider the derivative $\gamma'(0)$. This is also a vector in $\mathbb{R}^2$, but it represents something fundamentally different: a **direction** and **rate of change**. It tells us which way the curve is heading and how fast.
 
-**The fundamental idea of differentiation:** Replace $f$ with a simpler function that approximates it well near $\mathbf{a}$.
+In introductory calculus, both $\mathbf{p}$ and $\gamma'(0)$ are vectors in $\mathbb{R}^2$, and we freely add them, subtract them, and treat them as living in the same space. This works algebraically, but it obscures a crucial geometric distinction. A position and a direction are different kinds of objects.
 
-What's the simplest kind of function? A linear function. Linear functions:
-- Are completely characterized by a matrix
-- Are easy to compute with
-- Are easy to compose
-- Have well-understood geometric properties
+### The Affine Space vs Vector Space Distinction
 
-So we ask: **Can we approximate $f$ near $\mathbf{a}$ with a linear function?**
+Geometrically, the space of **points** forms an **affine space**. An affine space has no preferred origin—there's no canonical "zero point." You can't add two points together (what would the midpoint of Paris and London plus the midpoint of Tokyo and Beijing even mean?), and you can't multiply a point by a scalar.
 
-### The Definition of Differentiability
+What you *can* do is:
+- Subtract two points to get a displacement vector: $\mathbf{q} - \mathbf{p}$ is the vector pointing from $\mathbf{p}$ to $\mathbf{q}$
+- Add a vector to a point to get a new point: $\mathbf{p} + \mathbf{v}$ is the point reached by starting at $\mathbf{p}$ and moving along $\mathbf{v}$
 
-A function $f: \mathbb{R}^n \to \mathbb{R}^m$ is **differentiable** at $\mathbf{a}$ if there exists a linear map $L: \mathbb{R}^n \to \mathbb{R}^m$ such that:
+The space of **directions** (or displacements) forms a **vector space**. Here you can add, subtract, and scale freely. Vectors can be added together because "move right 3 units then up 2 units" is a well-defined operation. They can be scaled because "move twice as far in this direction" makes sense.
+
+When we write $f(\mathbf{a} + \mathbf{h})$, we're adding a direction $\mathbf{h}$ to a point $\mathbf{a}$ to get a new point. The expression $f(\mathbf{a} + \mathbf{h}) - f(\mathbf{a})$ then subtracts two values (points in the output space) to get a displacement in the output.
+
+### Tangent Spaces: Directions Attached to Points
+
+This distinction becomes essential when we study curved spaces. On a sphere, for instance, the natural notion of "direction" depends on where you are. A direction pointing "north" from the equator means something different than "north" from near the pole.
+
+This leads to the concept of a **tangent space**. At each point $\mathbf{a}$ on a manifold (a curved space), we attach a vector space $T_\mathbf{a}$ consisting of all possible **directions** one could move from $\mathbf{a}$. For a curve in the plane, the tangent space at a point is the line tangent to the curve. For a surface in three-dimensional space, the tangent space at a point is the plane tangent to the surface.
+
+For functions $f: \mathbb{R}^n \to \mathbb{R}^m$, we have:
+- An input tangent space $T_\mathbf{a} \mathbb{R}^n$ consisting of all possible input directions $\mathbf{h}$
+- An output tangent space $T_{f(\mathbf{a})} \mathbb{R}^m$ consisting of all possible output directions
+
+The **differential** $Df(\mathbf{a})$ is a linear map between these tangent spaces:
+
+$$
+Df(\mathbf{a}): T_\mathbf{a} \mathbb{R}^n \to T_{f(\mathbf{a})} \mathbb{R}^m
+$$
+
+It takes an input direction and tells us the corresponding output direction. This is why the differential is a linear map: it operates on the vector spaces of directions, not on the affine spaces of points.
+
+### Why This Matters
+
+The point-direction distinction clarifies many conceptual puzzles:
+
+**Why is the differential a linear map?** Because it maps between vector spaces of directions, and the natural structure-preserving maps between vector spaces are linear maps.
+
+**What does $\nabla f(\mathbf{a})$ represent?** It's a direction in the tangent space $T_\mathbf{a} \mathbb{R}^n$—specifically, the direction of steepest ascent of $f$ at the point $\mathbf{a}$.
+
+**Why can we add $\mathbf{h}$ to $Df(\mathbf{a})(\mathbf{h})$?** We're not—we're adding the displacement $Df(\mathbf{a})(\mathbf{h})$ (a direction) to the point $f(\mathbf{a})$ to get a new point $f(\mathbf{a}) + Df(\mathbf{a})(\mathbf{h})$.
+
+This framework generalizes beyond $\mathbb{R}^n$. On curved manifolds, tangent spaces are genuinely different at different points, and the differential becomes a map between genuinely different vector spaces. Understanding this distinction in the simple Euclidean case prepares us for the general theory.
+
+## The Differential: Linearizing Functions via Tangent Spaces
+
+Now we can properly define differentiability. A function $f: \mathbb{R}^n \to \mathbb{R}^m$ is **differentiable** at a point $\mathbf{a}$ if we can approximate it near $\mathbf{a}$ by a linear function acting on directions.
+
+More precisely, $f$ is differentiable at $\mathbf{a}$ if there exists a linear map $L: T_\mathbf{a}\mathbb{R}^n \to T_{f(\mathbf{a})}\mathbb{R}^m$ such that:
 
 $$
 f(\mathbf{a} + \mathbf{h}) = f(\mathbf{a}) + L(\mathbf{h}) + o(\|\mathbf{h}\|)
 $$
 
-where $o(\|\mathbf{h}\|)$ means "terms that go to zero faster than $\|\mathbf{h}\|$" as $\mathbf{h} \to \mathbf{0}$.
+where $o(\|\mathbf{h}\|)$ denotes terms that vanish faster than linearly as $\mathbf{h} \to \mathbf{0}$.
 
-**What this means geometrically:**
-- We can approximate the change in $f$ by a linear function $L$
-- The approximation error becomes negligible compared to the size of the perturbation $\mathbf{h}$
-- Near $\mathbf{a}$, the function $f$ "looks like" the linear function $L$ (plus a constant)
+Let's parse this carefully. We start at the point $\mathbf{a}$ and move in direction $\mathbf{h}$ to reach the point $\mathbf{a} + \mathbf{h}$. Evaluating $f$ there gives us the point $f(\mathbf{a} + \mathbf{h})$ in the output space.
 
-The linear map $L$ is called the **differential** of $f$ at $\mathbf{a}$, denoted $Df(\mathbf{a})$ or $df_{\mathbf{a}}$.
+To approximate this, we start at the output point $f(\mathbf{a})$, then move in the direction given by $L(\mathbf{h})$. The function is differentiable if this linear approximation captures the essential behavior, with only negligible error.
 
-### Key Insight: The Differential is a Linear Map
+The linear map $L$ is called the **differential** of $f$ at $\mathbf{a}$, denoted $Df(\mathbf{a})$ or $df_{\mathbf{a}}$. It encodes everything about how $f$ changes infinitesimally near $\mathbf{a}$.
 
-This is crucial: **The differential is not a number—it's a linear transformation.**
+### The Differential is Not a Number
+
+This bears emphasizing because it's a common source of confusion. The differential $Df(\mathbf{a})$ is **not a number**—it's a **linear transformation between tangent spaces**.
+
+When $n = m = 1$, we have $f: \mathbb{R} \to \mathbb{R}$, and the differential $Df(a): \mathbb{R} \to \mathbb{R}$ is multiplication by $f'(a)$. In this special case, we often identify the linear map with its slope $f'(a)$, but conceptually they're different: one is a transformation, the other is a number.
+
+For general $n$ and $m$, this identification is impossible. The differential is a map from an $n$-dimensional space to an $m$-dimensional space. It can be represented by an $m \times n$ matrix—the **Jacobian matrix**—but the differential itself is the linear transformation, not the matrix.
+
+### Tangent Hyperplanes and Linear Approximation
+
+Let's visualize this geometrically for a function $f: \mathbb{R}^2 \to \mathbb{R}$ (a surface in three-dimensional space). The graph of $f$ is the set of points $(x, y, f(x,y))$ forming a surface in $\mathbb{R}^3$.
+
+At a point $\mathbf{a} = (a_1, a_2)$, the graph passes through $(\mathbf{a}, f(\mathbf{a}))$. The differential $Df(\mathbf{a})$ defines a **tangent plane** to this surface. This plane is the graph of the linear approximation:
 
 $$
-Df(\mathbf{a}): \mathbb{R}^n \to \mathbb{R}^m
+L(\mathbf{h}) = Df(\mathbf{a})(\mathbf{h})
 $$
 
-It takes a direction vector $\mathbf{h} \in \mathbb{R}^n$ (an input perturbation) and returns a vector $Df(\mathbf{a})(\mathbf{h}) \in \mathbb{R}^m$ (the approximate change in output).
+Near $\mathbf{a}$, the curved surface of $f$ is well-approximated by this flat tangent plane. As we zoom in closer and closer to $\mathbf{a}$, the surface and the tangent plane become indistinguishable—this is what differentiability means.
 
-**Common notation confusion:**
-- $df$ often denotes the differential as a linear map
-- $\frac{\partial f}{\partial x_i}$ denotes a partial derivative (a number)
-- The relationship: $Df(\mathbf{a})(\mathbf{h}) = \sum_{i=1}^n \frac{\partial f}{\partial x_i}(\mathbf{a}) \cdot h_i$
+The tangent plane has a natural interpretation in terms of tangent spaces. At the input point $\mathbf{a}$, we have the tangent space $T_\mathbf{a}\mathbb{R}^2$ (which we can visualize as the horizontal plane through $\mathbf{a}$). At the output point $f(\mathbf{a})$, we have the tangent space $T_{f(\mathbf{a})}\mathbb{R}$ (the vertical direction).
 
-### The Matrix Representation: The Jacobian Matrix
+The graph of the differential—the set of points $(\mathbf{h}, Df(\mathbf{a})(\mathbf{h}))$ for all $\mathbf{h} \in T_\mathbf{a}\mathbb{R}^2$—is precisely this tangent plane.
 
-Since $Df(\mathbf{a})$ is a linear map from $\mathbb{R}^n$ to $\mathbb{R}^m$, it can be represented as an $m \times n$ matrix. This matrix is called the **Jacobian matrix**.
+### The Jacobian Matrix: Coordinates for the Differential
 
-For $f = (f_1, \ldots, f_m): \mathbb{R}^n \to \mathbb{R}^m$, the Jacobian at $\mathbf{a}$ is:
+While the differential $Df(\mathbf{a})$ is a coordinate-independent geometric object (a linear map between tangent spaces), we often need to compute with it. This requires choosing coordinates, which gives us the **Jacobian matrix**.
+
+If $f = (f_1, \ldots, f_m): \mathbb{R}^n \to \mathbb{R}^m$ and we use standard coordinates on both spaces, the Jacobian matrix is:
 
 $$
 Jf(\mathbf{a}) = \begin{bmatrix}
@@ -79,47 +123,47 @@ Jf(\mathbf{a}) = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-**Each row** corresponds to one output component $f_i$.
-**Each column** corresponds to one input direction $x_j$.
-**Entry $(i,j)$** tells us: "How does output $i$ change when we perturb input $j$?"
+Each entry $\frac{\partial f_i}{\partial x_j}(\mathbf{a})$ is the partial derivative of the $i$-th output component with respect to the $j$-th input variable. The full matrix represents the linear map $Df(\mathbf{a})$ in these coordinates.
 
-The linear approximation becomes:
+We can interpret the Jacobian row-by-row or column-by-column:
+
+**By rows**: Each row is the transpose of the gradient of one component function. The $i$-th row tells us how the $i$-th output component changes in all input directions.
+
+**By columns**: Each column is the directional derivative in one coordinate direction. The $j$-th column is $\frac{\partial f}{\partial x_j}(\mathbf{a})$, telling us how all output components change when we perturb the $j$-th input while holding others fixed.
+
+With the Jacobian matrix, we can write the linear approximation as:
 
 $$
 f(\mathbf{a} + \mathbf{h}) \approx f(\mathbf{a}) + Jf(\mathbf{a}) \cdot \mathbf{h}
 $$
 
-This is matrix-vector multiplication: the Jacobian matrix multiplied by the perturbation vector.
+This is standard matrix-vector multiplication. The Jacobian transforms input directions into output directions.
 
-### Geometric Interpretation
+### Composition and the Chain Rule
 
-Think of differentiation geometrically:
+One of the most beautiful aspects of the differential is how it behaves under composition. If we compose two differentiable functions, their differentials compose as linear maps.
 
-**The graph of $f$:** For $f: \mathbb{R}^n \to \mathbb{R}$, the graph is an $(n+1)$-dimensional surface in $\mathbb{R}^{n+1}$.
+**Theorem (Chain Rule):** If $f: \mathbb{R}^n \to \mathbb{R}^m$ is differentiable at $\mathbf{a}$ and $g: \mathbb{R}^m \to \mathbb{R}^p$ is differentiable at $f(\mathbf{a})$, then $g \circ f$ is differentiable at $\mathbf{a}$, and:
 
-**The differential $Df(\mathbf{a})$:** Defines the **tangent hyperplane** to this surface at the point $(\mathbf{a}, f(\mathbf{a}))$.
+$$
+D(g \circ f)(\mathbf{a}) = Dg(f(\mathbf{a})) \circ Df(\mathbf{a})
+$$
 
-Near $\mathbf{a}$, the graph of $f$ is well-approximated by this tangent hyperplane. The Jacobian matrix gives us the slope of this hyperplane in each coordinate direction.
+In terms of Jacobian matrices:
 
-**For higher dimensions ($m > 1$):** The graph lives in $\mathbb{R}^{n+m}$, and the differential defines the tangent space—an $n$-dimensional linear subspace that best approximates the graph near $\mathbf{a}$.
+$$
+J(g \circ f)(\mathbf{a}) = Jg(f(\mathbf{a})) \cdot Jf(\mathbf{a})
+$$
 
-### Why This Perspective Matters
+Why is this true? Think about tangent spaces. The differential $Df(\mathbf{a})$ maps from $T_\mathbf{a}\mathbb{R}^n$ to $T_{f(\mathbf{a})}\mathbb{R}^m$. The differential $Dg(f(\mathbf{a}))$ maps from $T_{f(\mathbf{a})}\mathbb{R}^m$ to $T_{g(f(\mathbf{a}))}\mathbb{R}^p$. The composition is a linear map from $T_\mathbf{a}\mathbb{R}^n$ to $T_{g(f(\mathbf{a}))}\mathbb{R}^p$—exactly what we need for the differential of $g \circ f$.
 
-Understanding the differential as a linear map (rather than just "the derivative") is essential for:
+The chain rule says that locally, we can approximate $f$ by its differential, approximate $g$ by its differential, and the best approximation of $g \circ f$ is the composition of these linear approximations. This is a profound statement: linear approximations compose the same way the original functions do.
 
-1. **Composition (Chain Rule):** Differentials compose like linear maps
-2. **Implicit Functions:** The implicit function theorem is about inverting differentials
-3. **Optimization:** Critical points are where the differential is zero
-4. **Numerical Methods:** Newton's method uses the differential to linearize equations
-5. **Differential Geometry:** Tangent spaces are defined via differentials
+## The Gradient: When Direction Has Length
 
-## Part 2: The Gradient—Scalar Functions and Inner Products
+For scalar-valued functions $f: \mathbb{R}^n \to \mathbb{R}$, the differential has a special structure that leads to the concept of the **gradient**.
 
-Let's specialize to the most common case: **scalar-valued functions** $f: \mathbb{R}^n \to \mathbb{R}$.
-
-### From Jacobian to Gradient
-
-For $f: \mathbb{R}^n \to \mathbb{R}$, the Jacobian is a $1 \times n$ matrix (a row vector):
+The output space $\mathbb{R}$ is one-dimensional, so the differential $Df(\mathbf{a}): T_\mathbf{a}\mathbb{R}^n \to T_{f(\mathbf{a})}\mathbb{R}$ takes input directions to scalar multiples. Its Jacobian is a $1 \times n$ matrix (a row vector):
 
 $$
 Jf(\mathbf{a}) = \begin{bmatrix}
@@ -130,12 +174,18 @@ $$
 The linear approximation is:
 
 $$
-f(\mathbf{a} + \mathbf{h}) \approx f(\mathbf{a}) + Jf(\mathbf{a}) \cdot \mathbf{h} = f(\mathbf{a}) + \sum_{i=1}^n \frac{\partial f}{\partial x_i}(\mathbf{a}) \cdot h_i
+f(\mathbf{a} + \mathbf{h}) \approx f(\mathbf{a}) + Jf(\mathbf{a}) \cdot \mathbf{h} = f(\mathbf{a}) + \sum_{i=1}^n \frac{\partial f}{\partial x_i}(\mathbf{a}) h_i
 $$
 
-This is a row vector times a column vector—an inner product.
+This is an inner product between the partial derivatives and the direction $\mathbf{h}$.
 
-**Definition:** The **gradient** of $f$ at $\mathbf{a}$, denoted $\nabla f(\mathbf{a})$, is the column vector:
+Now we use the fact that $\mathbb{R}^n$ has a natural **inner product** (dot product). This allows us to represent the linear functional $Df(\mathbf{a})$ as an inner product with a fixed vector. By the Riesz representation theorem, there exists a unique vector $\mathbf{g} \in T_\mathbf{a}\mathbb{R}^n$ such that:
+
+$$
+Df(\mathbf{a})(\mathbf{h}) = \langle \mathbf{g}, \mathbf{h} \rangle
+$$
+
+for all directions $\mathbf{h}$. This vector $\mathbf{g}$ is the **gradient**, denoted $\nabla f(\mathbf{a})$:
 
 $$
 \nabla f(\mathbf{a}) = \begin{bmatrix}
@@ -146,35 +196,17 @@ $$
 \end{bmatrix}
 $$
 
-The gradient is the **transpose** of the Jacobian: $\nabla f = (Jf)^T$.
+The gradient is the transpose of the Jacobian, converting the row vector to a column vector. But more fundamentally, it's the unique direction in the tangent space $T_\mathbf{a}\mathbb{R}^n$ that represents the differential via the inner product.
 
-With this notation, the linear approximation becomes:
+### The Gradient Points Uphill
 
-$$
-f(\mathbf{a} + \mathbf{h}) \approx f(\mathbf{a}) + \nabla f(\mathbf{a})^T \mathbf{h} = f(\mathbf{a}) + \langle \nabla f(\mathbf{a}), \mathbf{h} \rangle
-$$
+The gradient has a beautiful geometric interpretation. It points in the direction of steepest ascent of $f$ at $\mathbf{a}$.
 
-where $\langle \cdot, \cdot \rangle$ denotes the inner product.
-
-### The Gradient Points in the Direction of Steepest Ascent
-
-This is the key geometric property of the gradient. Let's prove it carefully.
-
-**Question:** In which direction $\mathbf{v}$ (with $\|\mathbf{v}\| = 1$) does $f$ increase most rapidly at $\mathbf{a}$?
-
-The **directional derivative** of $f$ at $\mathbf{a}$ in direction $\mathbf{v}$ is:
+To see why, consider the **directional derivative**. If $\mathbf{v}$ is a unit direction ($\|\mathbf{v}\| = 1$), the rate of change of $f$ along $\mathbf{v}$ is:
 
 $$
-D_{\mathbf{v}} f(\mathbf{a}) = \lim_{t \to 0} \frac{f(\mathbf{a} + t\mathbf{v}) - f(\mathbf{a})}{t}
+D_\mathbf{v} f(\mathbf{a}) = \langle \nabla f(\mathbf{a}), \mathbf{v} \rangle
 $$
-
-Using our linear approximation:
-
-$$
-D_{\mathbf{v}} f(\mathbf{a}) = \langle \nabla f(\mathbf{a}), \mathbf{v} \rangle
-$$
-
-The directional derivative is the inner product of the gradient with the direction!
 
 By the Cauchy-Schwarz inequality:
 
@@ -182,180 +214,49 @@ $$
 \langle \nabla f(\mathbf{a}), \mathbf{v} \rangle \leq \|\nabla f(\mathbf{a})\| \cdot \|\mathbf{v}\| = \|\nabla f(\mathbf{a})\|
 $$
 
-Equality holds when $\mathbf{v}$ points in the same direction as $\nabla f(\mathbf{a})$.
+Equality holds precisely when $\mathbf{v}$ points in the same direction as $\nabla f(\mathbf{a})$.
 
-**Conclusion:**
-- The gradient $\nabla f(\mathbf{a})$ points in the direction of steepest ascent
-- Its magnitude $\|\nabla f(\mathbf{a})\|$ is the rate of increase in that direction
-- The negative gradient $-\nabla f(\mathbf{a})$ points in the direction of steepest descent
+Thus the directional derivative is maximized when we move in the direction of the gradient. The gradient points in the direction of steepest ascent, and its magnitude equals the rate of ascent in that direction. The negative gradient points in the direction of steepest descent, which is why gradient descent algorithms move in the $-\nabla f$ direction.
 
-This geometric insight is the foundation of gradient descent optimization.
+### Gradients are Perpendicular to Level Sets
 
-### Level Sets and Orthogonality
+Another fundamental property: the gradient is always perpendicular to the level sets of $f$.
 
-Another beautiful geometric property: **The gradient is orthogonal to level sets.**
+A **level set** is a set of the form $\{\mathbf{x} : f(\mathbf{x}) = c\}$ for some constant $c$. For $f: \mathbb{R}^2 \to \mathbb{R}$, level sets are curves (contour lines). For $f: \mathbb{R}^3 \to \mathbb{R}$, they are surfaces.
 
-A **level set** of $f$ at level $c$ is the set $\{\mathbf{x} : f(\mathbf{x}) = c\}$.
-
-**Claim:** If $\mathbf{a}$ lies on a level set, then $\nabla f(\mathbf{a})$ is orthogonal to the level set at $\mathbf{a}$.
-
-**Proof:** Let $\mathbf{c}(t)$ be any smooth curve lying on the level set with $\mathbf{c}(0) = \mathbf{a}$.
-
-Since $f(\mathbf{c}(t)) = c$ for all $t$, we have:
+If $\mathbf{a}$ lies on a level set and $\mathbf{c}(t)$ is any smooth curve on that level set passing through $\mathbf{a}$ at $t=0$, then $f(\mathbf{c}(t)) = c$ identically. Differentiating:
 
 $$
-\frac{d}{dt} f(\mathbf{c}(t)) = 0
+0 = \frac{d}{dt} f(\mathbf{c}(t))\bigg|_{t=0} = \langle \nabla f(\mathbf{a}), \mathbf{c}'(0) \rangle
 $$
 
-By the chain rule:
+Since $\mathbf{c}'(0)$ is tangent to the level set, and this holds for any such curve, the gradient must be perpendicular to the tangent space of the level set.
 
-$$
-\frac{d}{dt} f(\mathbf{c}(t)) = \nabla f(\mathbf{c}(t))^T \mathbf{c}'(t)
-$$
+This gives us a vivid geometric picture. Imagine a topographic map with contour lines. The gradient at any point is perpendicular to the contour through that point, pointing toward higher elevations. To climb the hill most efficiently, you walk perpendicular to the contours, following the gradient.
 
-At $t = 0$:
-
-$$
-\langle \nabla f(\mathbf{a}), \mathbf{c}'(0) \rangle = 0
-$$
-
-Since $\mathbf{c}'(0)$ is tangent to the level set, and this holds for any such curve, $\nabla f(\mathbf{a})$ is orthogonal to the tangent space of the level set.
-
-**Geometric picture:**
-- Level sets are like contour lines on a topographic map
-- The gradient points perpendicular to these contours
-- It points "uphill" in the direction that crosses contours most rapidly
-
-### Example: Quadratic Functions and Ellipsoids
+### Example: Quadratic Forms and Ellipsoids
 
 Consider the quadratic function:
 
 $$
-f(\mathbf{x}) = \frac{1}{2} \mathbf{x}^T A \mathbf{x}
+f(\mathbf{x}) = \frac{1}{2}\mathbf{x}^T A \mathbf{x}
 $$
 
-where $A$ is a symmetric positive definite matrix.
-
-The gradient is:
+where $A$ is a symmetric positive definite $n \times n$ matrix. The gradient is:
 
 $$
 \nabla f(\mathbf{x}) = A\mathbf{x}
 $$
 
-The level sets are ellipsoids: $\{\mathbf{x} : \mathbf{x}^T A \mathbf{x} = c\}$.
+The level sets are ellipsoids centered at the origin. At any point $\mathbf{x}$ on an ellipsoid, the gradient $A\mathbf{x}$ points perpendicular to the ellipsoid, directly toward the origin (since $A$ is positive definite).
 
-At any point $\mathbf{x}$ on an ellipsoid, the gradient $A\mathbf{x}$ points perpendicular to the ellipsoid, toward the center (if $A$ is positive definite, this is the direction of steepest ascent toward larger values).
+The eigenstructure of $A$ determines the shape of these ellipsoids. The eigenvectors give the principal axes, and the eigenvalues determine how elongated the ellipsoid is in each direction. This connection between the gradient and the geometry of level sets is fundamental to understanding optimization landscapes.
 
-This example shows how the gradient encodes both the geometry of the level sets and the local rate of change.
+## The Hessian: Curvature and Second-Order Geometry
 
-## Part 3: The Jacobian—Vector-Valued Functions and Linear Maps
+The gradient tells us the direction and rate of change—the first-order behavior. To understand how this rate of change itself changes—the curvature—we need second derivatives, organized into the **Hessian matrix**.
 
-Now we return to the general case: **vector-valued functions** $f: \mathbb{R}^n \to \mathbb{R}^m$.
-
-### The Jacobian Encodes All Partial Derivatives
-
-Recall the Jacobian matrix:
-
-$$
-Jf(\mathbf{a}) = \begin{bmatrix}
-\nabla f_1(\mathbf{a})^T \\
-\nabla f_2(\mathbf{a})^T \\
-\vdots \\
-\nabla f_m(\mathbf{a})^T
-\end{bmatrix}
-$$
-
-**Each row is the gradient (transposed) of one component function.**
-
-Alternatively, we can view it column-by-column:
-
-$$
-Jf(\mathbf{a}) = \begin{bmatrix}
-\frac{\partial f}{\partial x_1}(\mathbf{a}) & \frac{\partial f}{\partial x_2}(\mathbf{a}) & \cdots & \frac{\partial f}{\partial x_n}(\mathbf{a})
-\end{bmatrix}
-$$
-
-**Each column is the derivative of $f$ with respect to one input variable.**
-
-The column $\frac{\partial f}{\partial x_j}(\mathbf{a})$ tells us how all $m$ output components change when we perturb the $j$-th input.
-
-### The Chain Rule: Composition of Linear Maps
-
-One of the most important properties of the Jacobian is how it behaves under composition.
-
-**Theorem (Multivariable Chain Rule):** If $f: \mathbb{R}^n \to \mathbb{R}^m$ is differentiable at $\mathbf{a}$ and $g: \mathbb{R}^m \to \mathbb{R}^p$ is differentiable at $f(\mathbf{a})$, then the composition $g \circ f$ is differentiable at $\mathbf{a}$, and:
-
-$$
-J(g \circ f)(\mathbf{a}) = Jg(f(\mathbf{a})) \cdot Jf(\mathbf{a})
-$$
-
-**The Jacobian of a composition is the product of the Jacobians.**
-
-This is exactly how linear maps compose! If $L_1: \mathbb{R}^n \to \mathbb{R}^m$ and $L_2: \mathbb{R}^m \to \mathbb{R}^p$ are linear maps, then $(L_2 \circ L_1)$ is a linear map with matrix $[L_2][L_1]$.
-
-**Why this works:**
-- Locally, $f$ looks like the linear map $Df(\mathbf{a})$
-- Locally, $g$ looks like the linear map $Dg(f(\mathbf{a}))$
-- Composing linear approximations gives $Dg(f(\mathbf{a})) \circ Df(\mathbf{a})$
-- This is the best linear approximation of $g \circ f$
-
-**Dimensional analysis:**
-- $Jf(\mathbf{a})$ is $m \times n$ (from $\mathbb{R}^n$ to $\mathbb{R}^m$)
-- $Jg(f(\mathbf{a}))$ is $p \times m$ (from $\mathbb{R}^m$ to $\mathbb{R}^p$)
-- $J(g \circ f)(\mathbf{a})$ is $p \times n$ (from $\mathbb{R}^n$ to $\mathbb{R}^p$)
-
-The dimensions match perfectly for matrix multiplication.
-
-### Example: Coordinate Transformations
-
-Consider transforming from Cartesian to polar coordinates:
-
-$$
-f(r, \theta) = \begin{bmatrix} r\cos\theta \\ r\sin\theta \end{bmatrix}
-$$
-
-The Jacobian is:
-
-$$
-Jf(r, \theta) = \begin{bmatrix}
-\frac{\partial x}{\partial r} & \frac{\partial x}{\partial \theta} \\
-\frac{\partial y}{\partial r} & \frac{\partial y}{\partial \theta}
-\end{bmatrix} = \begin{bmatrix}
-\cos\theta & -r\sin\theta \\
-\sin\theta & r\cos\theta
-\end{bmatrix}
-$$
-
-**Geometric interpretation:**
-- The first column $\begin{bmatrix}\cos\theta \\ \sin\theta\end{bmatrix}$ shows how $(x,y)$ changes when we increase $r$ by 1 (moving radially outward)
-- The second column $\begin{bmatrix}-r\sin\theta \\ r\cos\theta\end{bmatrix}$ shows how $(x,y)$ changes when we increase $\theta$ by 1 radian (moving tangentially)
-
-The determinant $\det(Jf) = r$ appears in the change of variables formula for integration—it measures how areas scale under the transformation.
-
-### The Inverse Function Theorem
-
-The Jacobian also governs when functions are locally invertible.
-
-**Theorem (Inverse Function Theorem):** If $f: \mathbb{R}^n \to \mathbb{R}^n$ is continuously differentiable at $\mathbf{a}$ and $Jf(\mathbf{a})$ is invertible (i.e., $\det(Jf(\mathbf{a})) \neq 0$), then:
-1. $f$ is locally invertible near $\mathbf{a}$
-2. The inverse function $f^{-1}$ is differentiable
-3. The Jacobian of the inverse satisfies:
-
-$$
-Jf^{-1}(f(\mathbf{a})) = [Jf(\mathbf{a})]^{-1}
-$$
-
-**Intuition:** If the linear approximation $Jf(\mathbf{a})$ is invertible, then locally $f$ behaves like an invertible linear map, so it has a local inverse.
-
-This theorem is fundamental in differential geometry, optimization, and numerical analysis.
-
-## Part 4: The Hessian—Second Derivatives and Curvature
-
-The gradient tells us the **first-order** behavior of a function (its slope). To understand **curvature**—how the slope changes—we need second derivatives.
-
-### Defining the Hessian
-
-For a function $f: \mathbb{R}^n \to \mathbb{R}$ with continuous second partial derivatives, the **Hessian matrix** at $\mathbf{a}$ is:
+For a function $f: \mathbb{R}^n \to \mathbb{R}$ with continuous second partial derivatives, the Hessian at $\mathbf{a}$ is:
 
 $$
 Hf(\mathbf{a}) = \begin{bmatrix}
@@ -366,241 +267,106 @@ Hf(\mathbf{a}) = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-**Key properties:**
-- The Hessian is an $n \times n$ matrix
-- Entry $(i,j)$ is $\frac{\partial^2 f}{\partial x_i \partial x_j}$
-- By Schwarz's theorem, if mixed partials are continuous, then $\frac{\partial^2 f}{\partial x_i \partial x_j} = \frac{\partial^2 f}{\partial x_j \partial x_i}$
-- Therefore, **the Hessian is symmetric**
+By Schwarz's theorem (assuming continuity of mixed partials), $\frac{\partial^2 f}{\partial x_i \partial x_j} = \frac{\partial^2 f}{\partial x_j \partial x_i}$, so the Hessian is **symmetric**.
 
-### The Hessian is the Jacobian of the Gradient
+### The Hessian is the Differential of the Gradient
 
-There's a beautiful connection: the Hessian is the Jacobian of the gradient function.
+There's an elegant relationship: the Hessian is the Jacobian of the gradient function.
 
-If we view $\nabla f: \mathbb{R}^n \to \mathbb{R}^n$ as a vector-valued function, its Jacobian is:
+Think of the gradient $\nabla f: \mathbb{R}^n \to \mathbb{R}^n$ as a vector-valued function. Its differential at $\mathbf{a}$ is a linear map from $T_\mathbf{a}\mathbb{R}^n$ to $T_{\nabla f(\mathbf{a})}\mathbb{R}^n$, represented by the Jacobian matrix $J(\nabla f)(\mathbf{a})$.
+
+Computing this Jacobian:
 
 $$
 J(\nabla f)(\mathbf{a}) = \begin{bmatrix}
-\frac{\partial}{\partial x_1}\left(\frac{\partial f}{\partial x_1}\right) & \frac{\partial}{\partial x_2}\left(\frac{\partial f}{\partial x_1}\right) & \cdots & \frac{\partial}{\partial x_n}\left(\frac{\partial f}{\partial x_1}\right) \\
-\vdots & \vdots & \ddots & \vdots \\
-\frac{\partial}{\partial x_1}\left(\frac{\partial f}{\partial x_n}\right) & \frac{\partial}{\partial x_2}\left(\frac{\partial f}{\partial x_n}\right) & \cdots & \frac{\partial}{\partial x_n}\left(\frac{\partial f}{\partial x_n}\right)
+\frac{\partial}{\partial x_1}\left(\frac{\partial f}{\partial x_1}\right) & \cdots & \frac{\partial}{\partial x_n}\left(\frac{\partial f}{\partial x_1}\right) \\
+\vdots & \ddots & \vdots \\
+\frac{\partial}{\partial x_1}\left(\frac{\partial f}{\partial x_n}\right) & \cdots & \frac{\partial}{\partial x_n}\left(\frac{\partial f}{\partial x_n}\right)
 \end{bmatrix} = Hf(\mathbf{a})^T
 $$
 
-So $Hf = J(\nabla f)^T$, or equivalently, $Hf = \nabla(\nabla f)^T$.
+So $Hf(\mathbf{a}) = J(\nabla f)(\mathbf{a})^T$. Since the Hessian is symmetric, $Hf(\mathbf{a}) = J(\nabla f)(\mathbf{a})$.
 
-**Interpretation:** The Hessian tells us how the gradient changes as we move through the input space.
+This means the Hessian encodes how the gradient—the direction of steepest ascent—changes as we move through space. It's the differential of the gradient field.
 
-### Second-Order Taylor Approximation
+### Quadratic Approximation
 
-Just as the gradient gives a first-order approximation, the Hessian gives a second-order approximation:
+Just as the gradient gives a first-order (linear) approximation, the Hessian gives a second-order (quadratic) approximation:
 
 $$
-f(\mathbf{a} + \mathbf{h}) \approx f(\mathbf{a}) + \nabla f(\mathbf{a})^T \mathbf{h} + \frac{1}{2} \mathbf{h}^T Hf(\mathbf{a}) \mathbf{h}
+f(\mathbf{a} + \mathbf{h}) \approx f(\mathbf{a}) + \langle \nabla f(\mathbf{a}), \mathbf{h} \rangle + \frac{1}{2}\mathbf{h}^T Hf(\mathbf{a}) \mathbf{h}
 $$
 
-The term $\mathbf{h}^T Hf(\mathbf{a}) \mathbf{h}$ is a **quadratic form**—it captures how $f$ curves in the direction $\mathbf{h}$.
+The new term $\frac{1}{2}\mathbf{h}^T Hf(\mathbf{a}) \mathbf{h}$ is a **quadratic form**. It captures how the function curves in the direction $\mathbf{h}$.
 
-**For small $\mathbf{h}$:**
-- Linear term $\nabla f(\mathbf{a})^T \mathbf{h}$ dominates if $\nabla f(\mathbf{a}) \neq \mathbf{0}$
-- Quadratic term $\frac{1}{2}\mathbf{h}^T Hf(\mathbf{a}) \mathbf{h}$ becomes important when $\nabla f(\mathbf{a}) = \mathbf{0}$ (at critical points)
+For small displacements $\mathbf{h}$, if $\nabla f(\mathbf{a}) \neq \mathbf{0}$, the linear term dominates. But at a **critical point** where $\nabla f(\mathbf{a}) = \mathbf{0}$, the linear term vanishes, and the quadratic term determines the local behavior. This is why the Hessian is essential for understanding critical points.
 
-### The Hessian and Critical Points
+### Critical Points and the Second Derivative Test
 
-A point $\mathbf{a}$ is a **critical point** if $\nabla f(\mathbf{a}) = \mathbf{0}$.
+At a critical point $\mathbf{a}$ (where $\nabla f(\mathbf{a}) = \mathbf{0}$), the second-order approximation simplifies to:
 
-At a critical point, the linear approximation tells us nothing (the function is flat to first order). The Hessian determines whether the critical point is a local minimum, maximum, or saddle point.
+$$
+f(\mathbf{a} + \mathbf{h}) \approx f(\mathbf{a}) + \frac{1}{2}\mathbf{h}^T Hf(\mathbf{a}) \mathbf{h}
+$$
 
-**Second Derivative Test:**
+The sign of the quadratic form determines whether $\mathbf{a}$ is a minimum, maximum, or saddle point.
 
-If $\nabla f(\mathbf{a}) = \mathbf{0}$, then:
+If $Hf(\mathbf{a})$ is **positive definite** (all eigenvalues positive), then $\mathbf{h}^T Hf(\mathbf{a}) \mathbf{h} > 0$ for all nonzero $\mathbf{h}$. The function curves upward in every direction, making $\mathbf{a}$ a **local minimum**.
 
-1. **If $Hf(\mathbf{a})$ is positive definite** (all eigenvalues $> 0$): $\mathbf{a}$ is a **local minimum**
-   - The quadratic term $\mathbf{h}^T Hf(\mathbf{a}) \mathbf{h} > 0$ for all $\mathbf{h} \neq \mathbf{0}$
-   - The function curves upward in all directions
+If $Hf(\mathbf{a})$ is **negative definite** (all eigenvalues negative), then $\mathbf{h}^T Hf(\mathbf{a}) \mathbf{h} < 0$ for all nonzero $\mathbf{h}$. The function curves downward in every direction, making $\mathbf{a}$ a **local maximum**.
 
-2. **If $Hf(\mathbf{a})$ is negative definite** (all eigenvalues $< 0$): $\mathbf{a}$ is a **local maximum**
-   - The quadratic term $\mathbf{h}^T Hf(\mathbf{a}) \mathbf{h} < 0$ for all $\mathbf{h} \neq \mathbf{0}$
-   - The function curves downward in all directions
+If $Hf(\mathbf{a})$ has both positive and negative eigenvalues, the quadratic form is positive in some directions and negative in others. The critical point is a **saddle point**—the function curves upward along certain directions and downward along others.
 
-3. **If $Hf(\mathbf{a})$ has both positive and negative eigenvalues**: $\mathbf{a}$ is a **saddle point**
-   - The function curves upward in some directions, downward in others
-   - Not a local extremum
+### Principal Curvatures and Eigenstructure
 
-4. **If $Hf(\mathbf{a})$ is singular** (has zero eigenvalues): The test is **inconclusive**
-   - Higher-order terms are needed
+The eigenvalues and eigenvectors of the Hessian have a beautiful geometric interpretation as **principal curvatures** and **principal directions**.
 
-### Geometric Interpretation: Principal Curvatures
-
-The eigenvalues and eigenvectors of the Hessian have beautiful geometric meaning.
-
-**Spectral decomposition:** Since $Hf(\mathbf{a})$ is symmetric, it has an orthonormal eigenbasis $\{\mathbf{v}_1, \ldots, \mathbf{v}_n\}$ with eigenvalues $\lambda_1, \ldots, \lambda_n$:
+Since $Hf(\mathbf{a})$ is symmetric, it has an orthonormal eigenbasis $\{\mathbf{v}_1, \ldots, \mathbf{v}_n\}$ with real eigenvalues $\lambda_1, \ldots, \lambda_n$:
 
 $$
 Hf(\mathbf{a}) = \sum_{i=1}^n \lambda_i \mathbf{v}_i \mathbf{v}_i^T
 $$
 
-In the eigenbasis, the second-order approximation becomes:
+In the coordinate system defined by this eigenbasis, the quadratic approximation becomes:
 
 $$
 f(\mathbf{a} + \mathbf{h}) \approx f(\mathbf{a}) + \frac{1}{2}\sum_{i=1}^n \lambda_i h_i^2
 $$
 
-where $h_i = \mathbf{h}^T \mathbf{v}_i$ are the components of $\mathbf{h}$ in the eigenbasis.
+where $h_i = \langle \mathbf{h}, \mathbf{v}_i \rangle$ are the components of $\mathbf{h}$ in the eigenbasis.
 
-**Geometric picture:**
-- Each eigenvector $\mathbf{v}_i$ is a **principal direction of curvature**
-- Each eigenvalue $\lambda_i$ is the **curvature** in that direction
-- Near a critical point, level sets are (approximately) ellipsoids aligned with the eigenvectors
-- The axes lengths are proportional to $1/\sqrt{|\lambda_i|}$
+Each eigenvector $\mathbf{v}_i$ is a **principal direction**, and the corresponding eigenvalue $\lambda_i$ is the **curvature** in that direction. Near a critical point, the level sets of $f$ are approximately ellipsoids aligned with these principal directions, with axis lengths proportional to $1/\sqrt{|\lambda_i|}$.
 
-**Example:** For $f(\mathbf{x}) = \frac{1}{2}\mathbf{x}^T A \mathbf{x}$ (quadratic form), we have:
-- $\nabla f(\mathbf{x}) = A\mathbf{x}$
-- $Hf(\mathbf{x}) = A$ (constant!)
-- The eigenvalues of $A$ directly give the principal curvatures
-- The eigenvectors of $A$ give the principal axes of the level set ellipsoids
+For example, if $f(\mathbf{x}) = \frac{1}{2}\mathbf{x}^T A \mathbf{x}$, then $Hf(\mathbf{x}) = A$ (constant everywhere). The eigenvalues of $A$ are the principal curvatures, and they directly determine the shape of the level set ellipsoids.
 
-### Condition Number and Optimization
+### Optimization and Conditioning
 
-The **condition number** of the Hessian, $\kappa(Hf(\mathbf{a})) = \frac{\lambda_{\max}}{\lambda_{\min}}$, measures the **eccentricity** of the local quadratic approximation.
+The Hessian profoundly affects optimization algorithms. The **condition number** $\kappa(Hf(\mathbf{a})) = \lambda_{\max}/\lambda_{\min}$ (the ratio of largest to smallest eigenvalue) measures how elongated the level sets are.
 
-**Large condition number** ($\kappa \gg 1$):
-- Level sets are very elongated ellipsoids
-- Function is much more curved in some directions than others
-- Gradient descent converges slowly (zigzagging)
-- Problem is **ill-conditioned**
+When the condition number is large, the level sets are very elongated ellipsoids. Gradient descent struggles in this regime because the gradient points perpendicular to the level sets, leading to a zigzagging trajectory that makes slow progress toward the minimum.
 
-**Small condition number** ($\kappa \approx 1$):
-- Level sets are nearly spherical
-- Curvature is similar in all directions
-- Gradient descent converges quickly
-- Problem is **well-conditioned**
+When the condition number is close to 1, the level sets are nearly spherical. The gradient points almost directly toward the minimum, and gradient descent converges rapidly.
 
-This is why **preconditioning** (transforming to make the Hessian more spherical) is crucial in optimization.
-
-### Newton's Method: Using Second-Order Information
-
-The Hessian is essential for **Newton's method**, a second-order optimization algorithm.
-
-**Gradient descent** update:
+This is why **Newton's method** is powerful. Instead of moving in the gradient direction, Newton's method moves in the direction:
 
 $$
-\mathbf{x}_{k+1} = \mathbf{x}_k - \alpha \nabla f(\mathbf{x}_k)
+\mathbf{h}^* = -Hf(\mathbf{x})^{-1} \nabla f(\mathbf{x})
 $$
 
-Uses only first-order information (gradient). Chooses a fixed step size $\alpha$.
+This is equivalent to making a gradient descent step in a transformed coordinate system where the Hessian is the identity matrix. In these coordinates, the level sets are spherical, and the algorithm converges much faster—quadratically rather than linearly.
 
-**Newton's method** update:
+## Synthesis: The Geometry of Approximation
 
-$$
-\mathbf{x}_{k+1} = \mathbf{x}_k - Hf(\mathbf{x}_k)^{-1} \nabla f(\mathbf{x}_k)
-$$
+Let's step back and see how these concepts fit together.
 
-Uses second-order information (Hessian). Automatically adapts step size and direction based on local curvature.
+Differentiation is about replacing complicated functions with simple linear ones that approximate them locally. The **differential** $Df(\mathbf{a})$ is a linear map between tangent spaces that represents the best linear approximation of $f$ near $\mathbf{a}$.
 
-**Intuition:** At each step, approximate $f$ by a quadratic function and jump to its minimum:
+For scalar functions $f: \mathbb{R}^n \to \mathbb{R}$, the differential is represented by the **gradient** $\nabla f(\mathbf{a})$, a direction in tangent space that points uphill and is perpendicular to level sets. The gradient tells us where to go to increase $f$ most rapidly.
 
-$$
-f(\mathbf{x}_k + \mathbf{h}) \approx f(\mathbf{x}_k) + \nabla f(\mathbf{x}_k)^T \mathbf{h} + \frac{1}{2}\mathbf{h}^T Hf(\mathbf{x}_k) \mathbf{h}
-$$
+For vector-valued functions $f: \mathbb{R}^n \to \mathbb{R}^m$, the differential is represented by the **Jacobian** $Jf(\mathbf{a})$, an $m \times n$ matrix encoding all first-order information about how $f$ transforms directions. The chain rule says Jacobians compose by matrix multiplication, reflecting the composition of linear maps.
 
-Minimizing this quadratic over $\mathbf{h}$ gives:
+The **Hessian** $Hf(\mathbf{a})$ captures second-order information—how the gradient itself changes. It's a symmetric matrix whose eigenvalues give principal curvatures and whose eigenvectors give principal directions. The Hessian determines whether critical points are minima, maxima, or saddle points, and it governs the convergence of optimization algorithms.
 
-$$
-\mathbf{h}^* = -Hf(\mathbf{x}_k)^{-1} \nabla f(\mathbf{x}_k)
-$$
+Throughout, the key insight is that **differentiation is linearization**, and the right way to think about this is through tangent spaces. Points and directions are different kinds of objects. The differential maps between spaces of directions, not spaces of points. When we write $f(\mathbf{a} + \mathbf{h}) \approx f(\mathbf{a}) + Df(\mathbf{a})(\mathbf{h})$, we're adding a direction to a point in the output space, guided by the linear transformation $Df(\mathbf{a})$ acting on the input direction $\mathbf{h}$.
 
-For quadratic functions, Newton's method converges in one step. For general functions, it has **quadratic convergence** near a minimum (errors square at each iteration).
-
-## Part 5: Connecting the Concepts
-
-Let's synthesize these ideas and see how they fit together.
-
-### The Hierarchy of Approximation
-
-Differentiation is about building a hierarchy of approximations:
-
-**Zeroth-order (constant approximation):**
-$$
-f(\mathbf{x}) \approx f(\mathbf{a})
-$$
-No derivatives needed. Only useful extremely close to $\mathbf{a}$.
-
-**First-order (linear approximation):**
-$$
-f(\mathbf{x}) \approx f(\mathbf{a}) + \nabla f(\mathbf{a})^T (\mathbf{x} - \mathbf{a})
-$$
-Uses the gradient. Captures the slope. Good for small $\|\mathbf{x} - \mathbf{a}\|$.
-
-**Second-order (quadratic approximation):**
-$$
-f(\mathbf{x}) \approx f(\mathbf{a}) + \nabla f(\mathbf{a})^T (\mathbf{x} - \mathbf{a}) + \frac{1}{2}(\mathbf{x}-\mathbf{a})^T Hf(\mathbf{a}) (\mathbf{x}-\mathbf{a})
-$$
-Uses the Hessian. Captures curvature. Much more accurate approximation.
-
-**Higher-order:** Continue with third derivatives, fourth derivatives, etc. (Taylor series).
-
-### Scalar vs. Vector Functions
-
-The concepts generalize naturally from scalar to vector functions:
-
-| Concept | Scalar $f: \mathbb{R}^n \to \mathbb{R}$ | Vector $f: \mathbb{R}^n \to \mathbb{R}^m$ |
-|---------|----------------------------------------|------------------------------------------|
-| **Differential** | Linear map $\mathbb{R}^n \to \mathbb{R}$ | Linear map $\mathbb{R}^n \to \mathbb{R}^m$ |
-| **Matrix form** | Gradient $\nabla f$ (column vector $n \times 1$) | Jacobian $Jf$ (matrix $m \times n$) |
-| **Rows** | One row: $\nabla f^T$ | $m$ rows: $\nabla f_1^T, \ldots, \nabla f_m^T$ |
-| **Second derivatives** | Hessian $Hf$ (matrix $n \times n$) | Tensor (third-order) or many Hessians |
-
-### Computational Perspective
-
-These concepts are essential for computational methods:
-
-**Gradient-based optimization:**
-- Gradient descent, SGD, Adam, etc.
-- Requires computing $\nabla f$
-- First-order methods
-
-**Newton-type methods:**
-- Newton's method, quasi-Newton (BFGS), Gauss-Newton
-- Require computing (or approximating) $Hf$
-- Second-order methods, faster convergence
-
-**Automatic differentiation:**
-- Forward mode: computes Jacobian-vector products efficiently
-- Reverse mode (backpropagation): computes vector-Jacobian products efficiently
-- Essential for deep learning
-
-**Numerical optimization:**
-- Finite differences approximate derivatives numerically
-- Understanding the differential helps choose appropriate step sizes
-- Condition number of Hessian predicts convergence behavior
-
-### Geometric Perspective Summary
-
-All these concepts have unified geometric interpretations:
-
-**Differential:** The tangent space—the best linear approximation of the function
-
-**Gradient:** The direction of steepest ascent, perpendicular to level sets
-
-**Jacobian:** The matrix of the linear approximation for vector-valued functions
-
-**Hessian:** The curvature operator—how the tangent space changes, principal curvatures
-
-## Conclusion
-
-The differential is not just "the derivative"—it's a **linear map** that approximates a function. This perspective unifies:
-
-- The **gradient** as a special case (scalar functions)
-- The **Jacobian** as the matrix representation (vector functions)
-- The **Hessian** as the differential of the gradient (second-order curvature)
-
-Understanding these concepts geometrically—as tangent spaces, directions of steepest ascent, and curvature operators—provides the right mental model for:
-
-- Optimization (gradient descent, Newton's method)
-- Machine learning (backpropagation, loss landscapes)
-- Differential geometry (manifolds, tangent bundles)
-- Numerical analysis (convergence rates, conditioning)
-
-The key insight: **differentiation is linear approximation.** The differential replaces a complicated nonlinear function with a simple linear one that captures local behavior. The gradient, Jacobian, and Hessian are different manifestations of this fundamental idea, each encoding geometric information about how functions change.
-
-Master this geometric perspective, and the formulas become more than symbols—they become intuitive descriptions of shape, slope, and curvature in high-dimensional space.
+This perspective—rooted in geometry and linear algebra rather than limits and infinitesimals—reveals differentiation as a natural and beautiful theory. The formulas are not arbitrary; they're forced on us by the geometry of approximation. Master this geometric viewpoint, and the gradient, Jacobian, and Hessian become intuitive tools for understanding how functions behave, how optimization works, and how change propagates through composed systems.
